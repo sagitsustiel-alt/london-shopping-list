@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="קניות לונדון">
+<title>רשימת קניות - לונדון</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;600;700&display=swap');
+
+  :root{
+    --navy:#14213D;
+    --navy-2:#1E2E52;
+    --red:#C8102E;
+    --cream:#F5F1E8;
+    --paper:#FBF8F2;
+    --gold:#B08D57;
+    --line:#DCD4C2;
+    --ink:#20242E;
+    --muted:#6B7180;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    font-family:'Heebo',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding:28px 16px 80px;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+  }
+
+  /* Header */
+  header{
+    position:relative;
+    padding:22px 22px 26px;
+    background:var(--navy);
+    border-radius:4px;
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-30px;
+    top:-30px;
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:14px solid var(--red);
+    opacity:0.9;
+  }
+  .eyebrow-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:10px;
+    position:relative;
+    z-index:1;
+  }
+  .eyebrow-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .tube-dot{
+    width:10px;height:10px;border-radius:50%;background:var(--red);
+    flex-shrink:0;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:#C9CEDB;
+    letter-spacing:0.02em;
+  }
+  .user-chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:#C9CEDB;
+    cursor:pointer;
+    background:rgba(255,255,255,0.08);
+    padding:5px 10px 5px 6px;
+    border-radius:20px;
+    border:none;
+  }
+  .user-chip img{
+    width:20px;height:20px;border-radius:50%;
+  }
+  h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:900;
+    font-size:32px;
+    color:var(--paper);
+    margin:0 0 6px;
+    position:relative;
+    z-index:1;
+    line-height:1.15;
+  }
+  .sub{
+    color:#AEB4C4;
+    font-size:14.5px;
+    position:relative;
+    z-index:1;
+    max-width:320px;
+  }
+
+  /* Login screen */
+  .login-screen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:60px 24px;
+    text-align:center;
+  }
+  .login-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:32px 26px;
+    max-width:360px;
+  }
+  .login-title{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--navy);
+    margin-bottom:8px;
+  }
+  .login-sub{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:24px;
+    line-height:1.5;
+  }
+  .google-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    background:var(--navy);
+    color:var(--paper);
+    border:none;
+    border-radius:4px;
+    padding:13px 18px;
+    font-family:'Heebo',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .google-btn:hover{background:var(--navy-2);}
+  .google-btn svg{width:18px;height:18px;flex-shrink:0;}
+  .login-error{
+    color:var(--red);
+    font-size:13px;
+    margin-top:14px;
+  }
+
+  /* Sync status */
+  .sync-note{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+
+  /* Progress summary */
+  .summary{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:14px 18px;
+    margin-bottom:22px;
+  }
+  .summary .num{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:22px;
+    color:var(--navy);
+  }
+  .summary .lbl{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .summary-bar{
+    flex:1;
+    height:6px;
+    background:var(--line);
+    border-radius:3px;
+    margin:0 18px;
+    overflow:hidden;
+  }
+  .summary-bar-fill{
+    height:100%;
+    background:var(--red);
+    border-radius:3px;
+    transition:width 0.35s ease;
+  }
+
+  /* Add store */
+  .add-store{
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+  }
+  .add-store input{
+    flex:1;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:4px;
+    padding:12px 14px;
+    font-family:'Heebo',sans-serif;
+    font-size:15px;
+    color:var(--ink);
+  }
+  .add-store input:focus{
+    outline:none;
+    border-color:var(--navy);
+  }
+  .add-store button{
+    background:var(--navy);
+    color:var(--paper);
+    border:none;
+    border-radius:4px;
+    padding:0 20px;
+    font-family:'Heebo',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .add-store button:hover{background:var(--navy-2);}
+  .add-store button:disabled{opacity:0.5; cursor:default;}
+
+  /* Store card */
+  .store{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:18px;
+    overflow:hidden;
+  }
+  .store-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #FFFDF9, var(--paper));
+  }
+  .store-title-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .store-mark{
+    width:6px;
+    height:22px;
+    background:var(--red);
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .store-name{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:19px;
+    color:var(--navy);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .store-count{
+    font-size:12.5px;
+    color:var(--muted);
+    flex-shrink:0;
+    margin-inline-start:10px;
+  }
+  .store-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    padding:2px 6px;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .store-del:hover{color:var(--red);}
+
+  .items{
+    list-style:none;
+    margin:0;
+    padding:6px 8px;
+  }
+  .item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:10px 10px;
+    border-radius:3px;
+  }
+  .item:hover{background:#F1EBDD;}
+
+  .checkbox{
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    border:2px solid var(--navy);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:var(--paper);
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  .checkbox.checked{
+    background:var(--red);
+    border-color:var(--red);
+  }
+  .checkbox svg{
+    width:14px;
+    height:14px;
+    opacity:0;
+    transform:scale(0.6);
+    transition:opacity 0.12s ease, transform 0.12s ease;
+  }
+  .checkbox.checked svg{opacity:1; transform:scale(1);}
+
+  .item-name{
+    flex:1;
+    font-size:15px;
+    color:var(--ink);
+    min-width:0;
+    word-break:break-word;
+  }
+  .item.checked .item-name{
+    color:var(--muted);
+    text-decoration:line-through;
+    text-decoration-color:var(--red);
+  }
+  .item-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    opacity:0;
+    font-size:16px;
+    cursor:pointer;
+    padding:2px 6px;
+    flex-shrink:0;
+    transition:opacity 0.12s ease;
+  }
+  .item:hover .item-del{opacity:1;}
+  .item-del:hover{color:var(--red);}
+
+  .add-item{
+    display:flex;
+    gap:8px;
+    padding:10px 12px 14px;
+  }
+  .add-item input{
+    flex:1;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:9px 12px;
+    font-family:'Heebo',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .add-item input:focus{outline:none; border-color:var(--gold);}
+  .add-item button{
+    background:var(--paper);
+    border:1px solid var(--navy);
+    color:var(--navy);
+    border-radius:3px;
+    padding:0 16px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .add-item button:hover{background:var(--navy); color:var(--paper);}
+
+  .empty-store{
+    padding:18px 16px;
+    text-align:center;
+    color:var(--muted);
+    font-size:13.5px;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--muted);
+  }
+  .empty-state .big{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:20px;
+    color:var(--navy);
+    margin-bottom:6px;
+  }
+
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div class="wrap login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-title">רשימת קניות - לונדון</div>
+      <div class="login-sub">מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.</div>
+      <button class="google-btn" id="loginBtn">
+        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20.4H24v7.2h11.3c-1.6 4.6-6 7.9-11.3 7.9-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l5.9 4.3C13.7 15.6 18.5 12.4 24 12.4c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4c-7.4 0-13.8 4.2-17 10.3z"/><path fill="#4CAF50" d="M24 44c5 0 9.5-1.9 12.9-5.1l-6-4.9c-2 1.4-4.6 2.3-7 2.3-5.3 0-9.7-3.4-11.3-8.1l-6 4.6C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20.4H24v7.2h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6 4.9C40.5 35.1 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+        התחברות עם Google
+      </button>
+      <div class="login-error hidden" id="loginError">משהו השתבש בהתחברות. נסי שוב.</div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="wrap hidden" id="appScreen">
+    <header>
+      <div class="eyebrow-row">
+        <div class="eyebrow-left">
+          <div class="tube-dot"></div>
+          <div class="eyebrow">טיול ללונדון</div>
+        </div>
+        <button class="user-chip" id="userChip"></button>
+      </div>
+      <h1>רשימת קניות</h1>
+      <div class="sub">חנות אחרי חנות — מה לקנות, ומה כבר נקנה</div>
+    </header>
+
+    <div class="sync-note" id="syncNote">שומר אוטומטית לחשבון שלך</div>
+
+    <div class="summary">
+      <div>
+        <div class="num" id="summaryNum">0 / 0</div>
+        <div class="lbl">פריטים נקנו</div>
+      </div>
+      <div class="summary-bar"><div class="summary-bar-fill" id="summaryBar" style="width:0%"></div></div>
+      <div class="lbl" id="summaryPct">0%</div>
+    </div>
+
+    <div class="add-store">
+      <input type="text" id="newStoreInput" placeholder="שם חנות חדשה, למשל Harrods">
+      <button id="addStoreBtn">הוסף חנות</button>
+    </div>
+
+    <div id="storesContainer"></div>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, onAuthStateChanged, signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, collection, doc, setDoc, onSnapshot,
+  deleteDoc, addDoc, serverTimestamp, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBXSywtG6nAosUSK8614LVCSdzVVQq7O-o",
+  authDomain: "london-shopping-list.firebaseapp.com",
+  projectId: "london-shopping-list",
+  storageBucket: "london-shopping-list.firebasestorage.app",
+  messagingSenderId: "1082293525814",
+  appId: "1:1082293525814:web:59563d356a225872922797",
+  measurementId: "G-M8R1GQ747Z"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let stores = [];
+let unsubscribeStores = null;
+
+const loginScreen = document.getElementById('loginScreen');
+const appScreen = document.getElementById('appScreen');
+const loginBtn = document.getElementById('loginBtn');
+const loginError = document.getElementById('loginError');
+const userChip = document.getElementById('userChip');
+const storesContainer = document.getElementById('storesContainer');
+const newStoreInput = document.getElementById('newStoreInput');
+const addStoreBtn = document.getElementById('addStoreBtn');
+
+loginBtn.addEventListener('click', async () => {
+  loginError.classList.add('hidden');
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (err) {
+    console.error(err);
+    // popup blocked or unsupported (common on some mobile browsers) -> fallback to redirect
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/cancelled-popup-request') {
+      try { await signInWithRedirect(auth, provider); return; } catch (e2) { console.error(e2); }
+    }
+    loginError.classList.remove('hidden');
+  }
+});
+
+getRedirectResult(auth).catch(err => console.error(err));
+
+userChip.addEventListener('click', async () => {
+  if (confirm('להתנתק מהחשבון?')) {
+    await signOut(auth);
+  }
+});
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  if (unsubscribeStores) { unsubscribeStores(); unsubscribeStores = null; }
+
+  if (user) {
+    loginScreen.classList.add('hidden');
+    appScreen.classList.remove('hidden');
+    userChip.innerHTML = `<img src="${user.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(user.displayName ? user.displayName.split(' ')[0] : 'יציאה')}`;
+    listenToStores(user.uid);
+  } else {
+    appScreen.classList.add('hidden');
+    loginScreen.classList.remove('hidden');
+    stores = [];
+  }
+});
+
+function listenToStores(uid) {
+  const storesRef = collection(db, 'users', uid, 'stores');
+  const q = query(storesRef, orderBy('createdAt', 'asc'));
+  unsubscribeStores = onSnapshot(q, (snapshot) => {
+    stores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    render();
+  }, (err) => {
+    console.error(err);
+  });
+}
+
+addStoreBtn.addEventListener('click', addStore);
+newStoreInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addStore(); });
+
+async function addStore() {
+  const name = newStoreInput.value.trim();
+  if (!name || !currentUser) return;
+  newStoreInput.value = '';
+  const storesRef = collection(db, 'users', currentUser.uid, 'stores');
+  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp() });
+}
+
+window.deleteStore = async function(storeId) {
+  if (!currentUser) return;
+  await deleteDoc(doc(db, 'users', currentUser.uid, 'stores', storeId));
+};
+
+window.addItem = async function(storeId, inputEl) {
+  const name = inputEl.value.trim();
+  if (!name || !currentUser) return;
+  inputEl.value = '';
+  const store = stores.find(s => s.id === storeId);
+  const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false }];
+  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+};
+
+window.toggleItem = async function(storeId, itemId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
+  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+};
+
+window.deleteItem = async function(storeId, itemId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).filter(i => i.id !== itemId);
+  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+};
+
+function cryptoRandomId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function checkmarkSvg() {
+  return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12.5L10 17.5L19 7.5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function render() {
+  let totalItems = 0, checkedItems = 0;
+  stores.forEach(s => {
+    const items = s.items || [];
+    totalItems += items.length;
+    checkedItems += items.filter(i => i.checked).length;
+  });
+
+  document.getElementById('summaryNum').textContent = checkedItems + ' / ' + totalItems;
+  const pct = totalItems ? Math.round((checkedItems / totalItems) * 100) : 0;
+  document.getElementById('summaryBar').style.width = pct + '%';
+  document.getElementById('summaryPct').textContent = pct + '%';
+
+  if (stores.length === 0) {
+    storesContainer.innerHTML = '<div class="empty-state"><div class="big">עוד אין חנויות ברשימה</div><div>הוסיפו חנות ראשונה למעלה כדי להתחיל</div></div>';
+    return;
+  }
+
+  storesContainer.innerHTML = stores.map(store => {
+    const items = store.items || [];
+    const checkedCount = items.filter(i => i.checked).length;
+    const itemsHtml = items.length === 0
+      ? '<div class="empty-store">אין עדיין פריטים בחנות הזו</div>'
+      : '<ul class="items">' + items.map(item => `
+          <li class="item ${item.checked ? 'checked' : ''}">
+            <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
+            <div class="item-name">${escapeHtml(item.name)}</div>
+            <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
+          </li>
+        `).join('') + '</ul>';
+
+    return `
+      <div class="store">
+        <div class="store-head">
+          <div class="store-title-row">
+            <div class="store-mark"></div>
+            <div class="store-name">${escapeHtml(store.name)}</div>
+            <div class="store-count">${checkedCount}/${items.length}</div>
+          </div>
+          <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
+        </div>
+        ${itemsHtml}
+        <div class="add-item">
+          <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
+          <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
