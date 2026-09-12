@@ -543,7 +543,7 @@ onAuthStateChanged(auth, (user) => {
     loginScreen.classList.add('hidden');
     appScreen.classList.remove('hidden');
     userChip.innerHTML = `<img src="${user.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(user.displayName ? user.displayName.split(' ')[0] : 'יציאה')}`;
-    listenToStores(user.uid);
+    listenToStores();
   } else {
     appScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
@@ -551,8 +551,11 @@ onAuthStateChanged(auth, (user) => {
   }
 });
 
-function listenToStores(uid) {
-  const storesRef = collection(db, 'users', uid, 'stores');
+// Shared list: everyone who signs in reads/writes the same collection
+const SHARED_PATH = ['trips', 'london', 'stores'];
+
+function listenToStores() {
+  const storesRef = collection(db, ...SHARED_PATH);
   const q = query(storesRef, orderBy('createdAt', 'asc'));
   unsubscribeStores = onSnapshot(q, (snapshot) => {
     stores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -569,13 +572,13 @@ async function addStore() {
   const name = newStoreInput.value.trim();
   if (!name || !currentUser) return;
   newStoreInput.value = '';
-  const storesRef = collection(db, 'users', currentUser.uid, 'stores');
-  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp() });
+  const storesRef = collection(db, ...SHARED_PATH);
+  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' });
 }
 
 window.deleteStore = async function(storeId) {
   if (!currentUser) return;
-  await deleteDoc(doc(db, 'users', currentUser.uid, 'stores', storeId));
+  await deleteDoc(doc(db, ...SHARED_PATH, storeId));
 };
 
 window.addItem = async function(storeId, inputEl) {
@@ -584,21 +587,21 @@ window.addItem = async function(storeId, inputEl) {
   inputEl.value = '';
   const store = stores.find(s => s.id === storeId);
   const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false }];
-  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
 window.toggleItem = async function(storeId, itemId) {
   if (!currentUser) return;
   const store = stores.find(s => s.id === storeId);
   const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
-  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
 window.deleteItem = async function(storeId, itemId) {
   if (!currentUser) return;
   const store = stores.find(s => s.id === storeId);
   const newItems = (store.items || []).filter(i => i.id !== itemId);
-  await setDoc(doc(db, 'users', currentUser.uid, 'stores', storeId), { items: newItems }, { merge: true });
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
 function cryptoRandomId() {
