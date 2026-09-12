@@ -345,6 +345,44 @@
   }
   .qty-input:focus{outline:none; border-color:var(--gold);}
 
+  .price-input{
+    width:64px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:4px 6px;
+    font-family:'Heebo',sans-serif;
+    font-size:13.5px;
+    color:var(--ink);
+    text-align:center;
+  }
+  .price-input:focus{outline:none; border-color:var(--gold);}
+
+  .store-total{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    border-top:1px solid var(--line);
+    background:#F6F1E4;
+    font-size:13.5px;
+  }
+  .store-total .label{
+    color:var(--muted);
+  }
+  .store-total .amounts{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .store-total .amounts .ils{
+    color:var(--red);
+    margin-inline-start:8px;
+    font-size:12.5px;
+    font-weight:600;
+  }
+
   .checkbox{
     width:24px;
     height:24px;
@@ -619,7 +657,7 @@ window.addItem = async function(storeId, inputEl) {
   if (!name || !currentUser) return;
   inputEl.value = '';
   const store = stores.find(s => s.id === storeId);
-  const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false, qty: 1 }];
+  const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false, qty: 1, price: 0 }];
   await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
@@ -636,6 +674,15 @@ window.updateQty = async function(storeId, itemId, value) {
   if (!Number.isFinite(qty) || qty < 1) qty = 1;
   const store = stores.find(s => s.id === storeId);
   const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, qty } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.updatePrice = async function(storeId, itemId, value) {
+  if (!currentUser) return;
+  let price = parseFloat(value);
+  if (!Number.isFinite(price) || price < 0) price = 0;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, price } : i);
   await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
@@ -684,9 +731,19 @@ function render() {
           <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
           <div class="item-name">${escapeHtml(item.name)}</div>
           <input type="number" min="1" class="qty-input" value="${item.qty != null ? item.qty : 1}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
+          <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${item.price ? item.price : ''}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
           <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
         </div>
       </li>`;
+
+    const storeTotalGbp = items.reduce((sum, i) => sum + (i.qty != null ? i.qty : 1) * (i.price || 0), 0);
+    const storeTotalIls = storeTotalGbp * 4;
+    const totalHtml = storeTotalGbp === 0 ? '' : `
+      <div class="store-total">
+        <span class="label">סה"כ</span>
+        <span class="amounts">£${storeTotalGbp.toFixed(2)}<span class="ils">₪${storeTotalIls.toFixed(2)}</span></span>
+      </div>
+    `;
 
     const pendingHtml = pending.length === 0
       ? (items.length === 0
@@ -711,6 +768,7 @@ function render() {
         </div>
         ${pendingHtml}
         ${purchasedHtml}
+        ${totalHtml}
         <div class="add-item">
           <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
           <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
