@@ -367,7 +367,13 @@
     white-space:nowrap;
     overflow:hidden;
     text-overflow:ellipsis;
+    border:none;
+    background:transparent;
+    padding:2px 0;
+    min-width:0;
+    flex:1;
   }
+  .store-name:focus{outline:none; border-bottom:1px solid var(--gold);}
   .store-count{
     font-size:12.5px;
     color:var(--muted);
@@ -498,8 +504,12 @@
     font-size:15px;
     color:var(--ink);
     min-width:0;
-    word-break:break-word;
+    border:none;
+    background:transparent;
+    font-family:'Heebo',sans-serif;
+    padding:2px 0;
   }
+  .item-name:focus{outline:none; border-bottom:1px solid var(--gold);}
   .item.checked .item-name{
     color:var(--muted);
     text-decoration:line-through;
@@ -827,6 +837,13 @@ window.deleteStore = async function(storeId) {
   await deleteDoc(doc(db, ...SHARED_PATH, storeId));
 };
 
+window.updateStoreName = async function(storeId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { name }, { merge: true });
+};
+
 window.addItem = async function(storeId, inputEl) {
   const name = inputEl.value.trim();
   if (!name || !currentUser) return;
@@ -858,6 +875,15 @@ window.updatePrice = async function(storeId, itemId, value) {
   if (!Number.isFinite(price) || price < 0) price = 0;
   const store = stores.find(s => s.id === storeId);
   const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, price } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.updateItemName = async function(storeId, itemId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, name } : i);
   await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
@@ -909,7 +935,7 @@ function render() {
       <li class="item ${item.checked ? 'checked' : ''}">
         <div class="item-top">
           <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
-          <div class="item-name">${escapeHtml(item.name)}</div>
+          <input type="text" class="item-name" value="${escapeHtml(item.name)}" onchange="updateItemName('${store.id}', '${item.id}', this.value)">
           <input type="number" min="1" class="qty-input" value="${qty}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
           <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${item.price ? item.price : ''}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
           ${rowTotalHtml}
@@ -943,7 +969,7 @@ function render() {
         <div class="store-head">
           <div class="store-title-row">
             <div class="store-mark"></div>
-            <div class="store-name">${escapeHtml(store.name)}</div>
+            <input type="text" class="store-name" value="${escapeHtml(store.name)}" onchange="updateStoreName('${store.id}', this.value)">
             <div class="store-count">${checkedCount}/${items.length}</div>
           </div>
           <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
