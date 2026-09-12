@@ -432,6 +432,18 @@
     font-size:13.5px;
   }
 
+  .purchased-divider{
+    padding:10px 16px 4px;
+    font-size:12px;
+    font-weight:600;
+    color:var(--muted);
+    border-top:1px solid var(--line);
+    margin-top:2px;
+  }
+  .purchased-list{
+    opacity:0.85;
+  }
+
   .empty-state{
     text-align:center;
     padding:50px 20px;
@@ -663,18 +675,29 @@ function render() {
   storesContainer.innerHTML = stores.map(store => {
     const items = store.items || [];
     const checkedCount = items.filter(i => i.checked).length;
-    const itemsHtml = items.length === 0
-      ? '<div class="empty-store">אין עדיין פריטים בחנות הזו</div>'
-      : '<ul class="items">' + items.map(item => `
-          <li class="item ${item.checked ? 'checked' : ''}">
-            <div class="item-top">
-              <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
-              <div class="item-name">${escapeHtml(item.name)}</div>
-              <input type="number" min="1" class="qty-input" value="${item.qty != null ? item.qty : 1}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
-              <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
-            </div>
-          </li>
-        `).join('') + '</ul>';
+    const pending = items.filter(i => !i.checked);
+    const purchased = items.filter(i => i.checked);
+
+    const renderRow = (item) => `
+      <li class="item ${item.checked ? 'checked' : ''}">
+        <div class="item-top">
+          <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
+          <div class="item-name">${escapeHtml(item.name)}</div>
+          <input type="number" min="1" class="qty-input" value="${item.qty != null ? item.qty : 1}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
+          <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
+        </div>
+      </li>`;
+
+    const pendingHtml = pending.length === 0
+      ? (items.length === 0
+          ? '<div class="empty-store">אין עדיין פריטים בחנות הזו</div>'
+          : '<div class="empty-store">כל הפריטים נקנו 🎉</div>')
+      : '<ul class="items">' + pending.map(renderRow).join('') + '</ul>';
+
+    const purchasedHtml = purchased.length === 0 ? '' : `
+      <div class="purchased-divider">נקנו (${purchased.length})</div>
+      <ul class="items purchased-list">${purchased.map(renderRow).join('')}</ul>
+    `;
 
     return `
       <div class="store">
@@ -686,7 +709,8 @@ function render() {
           </div>
           <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
         </div>
-        ${itemsHtml}
+        ${pendingHtml}
+        ${purchasedHtml}
         <div class="add-item">
           <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
           <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
