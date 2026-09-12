@@ -184,6 +184,80 @@
     margin-bottom:16px;
   }
 
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .tab-btn{
+    flex:1;
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--muted);
+    border-radius:4px;
+    padding:10px 12px;
+    font-family:'Heebo',sans-serif;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--navy);
+    color:var(--paper);
+    border-color:var(--navy);
+  }
+
+  .day-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:14px;
+    overflow:hidden;
+  }
+  .day-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:12px 14px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #FFFDF9, var(--paper));
+    gap:10px;
+  }
+  .day-label-input{
+    flex:1;
+    border:none;
+    background:transparent;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:17px;
+    color:var(--navy);
+    padding:4px 2px;
+  }
+  .day-label-input:focus{outline:none; border-bottom:1px solid var(--gold);}
+  .day-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    padding:2px 6px;
+    flex-shrink:0;
+  }
+  .day-del:hover{color:var(--red);}
+  .day-textarea{
+    width:100%;
+    border:none;
+    background:transparent;
+    padding:14px;
+    font-family:'Heebo',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    resize:vertical;
+    min-height:90px;
+    line-height:1.6;
+  }
+  .day-textarea:focus{outline:none;}
+
   /* Progress summary */
   .summary{
     display:flex;
@@ -359,6 +433,16 @@
   }
   .price-input:focus{outline:none; border-color:var(--gold);}
 
+  .row-total{
+    flex-shrink:0;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:13.5px;
+    color:var(--navy);
+    min-width:46px;
+    text-align:center;
+  }
+
   .store-total{
     display:flex;
     justify-content:space-between;
@@ -526,23 +610,37 @@
       <div class="sub">חנות אחרי חנות — מה לקנות, ומה כבר נקנה</div>
     </header>
 
+    <div class="tabs">
+      <button class="tab-btn active" id="tabShoppingBtn" onclick="switchView('shopping')">רשימת קניות</button>
+      <button class="tab-btn" id="tabItineraryBtn" onclick="switchView('itinerary')">תוכנית יומית</button>
+    </div>
+
     <div class="sync-note" id="syncNote">שומר אוטומטית לחשבון שלך</div>
 
-    <div class="summary">
-      <div>
-        <div class="num" id="summaryNum">0 / 0</div>
-        <div class="lbl">פריטים נקנו</div>
+    <div id="shoppingView">
+      <div class="summary">
+        <div>
+          <div class="num" id="summaryNum">0 / 0</div>
+          <div class="lbl">פריטים נקנו</div>
+        </div>
+        <div class="summary-bar"><div class="summary-bar-fill" id="summaryBar" style="width:0%"></div></div>
+        <div class="lbl" id="summaryPct">0%</div>
       </div>
-      <div class="summary-bar"><div class="summary-bar-fill" id="summaryBar" style="width:0%"></div></div>
-      <div class="lbl" id="summaryPct">0%</div>
+
+      <div class="add-store">
+        <input type="text" id="newStoreInput" placeholder="שם חנות חדשה, למשל Harrods">
+        <button id="addStoreBtn">הוסף חנות</button>
+      </div>
+
+      <div id="storesContainer"></div>
     </div>
 
-    <div class="add-store">
-      <input type="text" id="newStoreInput" placeholder="שם חנות חדשה, למשל Harrods">
-      <button id="addStoreBtn">הוסף חנות</button>
+    <div id="itineraryView" class="hidden">
+      <div class="add-store">
+        <button id="addDayBtn">+ הוסף יום</button>
+      </div>
+      <div id="daysContainer"></div>
     </div>
-
-    <div id="storesContainer"></div>
   </div>
 
 <script type="module">
@@ -573,7 +671,9 @@ const provider = new GoogleAuthProvider();
 
 let currentUser = null;
 let stores = [];
+let days = [];
 let unsubscribeStores = null;
+let unsubscribeDays = null;
 
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
@@ -583,6 +683,26 @@ const userChip = document.getElementById('userChip');
 const storesContainer = document.getElementById('storesContainer');
 const newStoreInput = document.getElementById('newStoreInput');
 const addStoreBtn = document.getElementById('addStoreBtn');
+const shoppingView = document.getElementById('shoppingView');
+const itineraryView = document.getElementById('itineraryView');
+const tabShoppingBtn = document.getElementById('tabShoppingBtn');
+const tabItineraryBtn = document.getElementById('tabItineraryBtn');
+const daysContainer = document.getElementById('daysContainer');
+const addDayBtn = document.getElementById('addDayBtn');
+
+window.switchView = function(view) {
+  if (view === 'shopping') {
+    shoppingView.classList.remove('hidden');
+    itineraryView.classList.add('hidden');
+    tabShoppingBtn.classList.add('active');
+    tabItineraryBtn.classList.remove('active');
+  } else {
+    shoppingView.classList.add('hidden');
+    itineraryView.classList.remove('hidden');
+    tabShoppingBtn.classList.remove('active');
+    tabItineraryBtn.classList.add('active');
+  }
+};
 
 loginBtn.addEventListener('click', async () => {
   loginError.classList.add('hidden');
@@ -609,21 +729,25 @@ userChip.addEventListener('click', async () => {
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
   if (unsubscribeStores) { unsubscribeStores(); unsubscribeStores = null; }
+  if (unsubscribeDays) { unsubscribeDays(); unsubscribeDays = null; }
 
   if (user) {
     loginScreen.classList.add('hidden');
     appScreen.classList.remove('hidden');
     userChip.innerHTML = `<img src="${user.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(user.displayName ? user.displayName.split(' ')[0] : 'יציאה')}`;
     listenToStores();
+    listenToDays();
   } else {
     appScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
     stores = [];
+    days = [];
   }
 });
 
 // Shared list: everyone who signs in reads/writes the same collection
 const SHARED_PATH = ['trips', 'london', 'stores'];
+const DAYS_PATH = ['trips', 'london', 'days'];
 
 function listenToStores() {
   const storesRef = collection(db, ...SHARED_PATH);
@@ -634,6 +758,57 @@ function listenToStores() {
   }, (err) => {
     console.error(err);
   });
+}
+
+function listenToDays() {
+  const daysRef = collection(db, ...DAYS_PATH);
+  const q = query(daysRef, orderBy('createdAt', 'asc'));
+  unsubscribeDays = onSnapshot(q, (snapshot) => {
+    days = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderDays();
+  }, (err) => {
+    console.error(err);
+  });
+}
+
+addDayBtn.addEventListener('click', addDay);
+
+async function addDay() {
+  if (!currentUser) return;
+  const daysRef = collection(db, ...DAYS_PATH);
+  const label = `יום ${days.length + 1}`;
+  await addDoc(daysRef, { label, text: '', createdAt: serverTimestamp() });
+}
+
+window.deleteDay = async function(dayId) {
+  if (!currentUser) return;
+  await deleteDoc(doc(db, ...DAYS_PATH, dayId));
+};
+
+window.updateDayLabel = async function(dayId, value) {
+  if (!currentUser) return;
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { label: value }, { merge: true });
+};
+
+window.updateDayText = async function(dayId, value) {
+  if (!currentUser) return;
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { text: value }, { merge: true });
+};
+
+function renderDays() {
+  if (days.length === 0) {
+    daysContainer.innerHTML = '<div class="empty-state"><div class="big">עוד אין ימים בתוכנית</div><div>הוסיפו יום ראשון למעלה כדי להתחיל</div></div>';
+    return;
+  }
+  daysContainer.innerHTML = days.map(day => `
+    <div class="day-card">
+      <div class="day-head">
+        <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
+        <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
+      </div>
+      <textarea class="day-textarea" placeholder="מה נעשה ביום הזה..." onchange="updateDayText('${day.id}', this.value)">${escapeHtml(day.text || '')}</textarea>
+    </div>
+  `).join('');
 }
 
 addStoreBtn.addEventListener('click', addStore);
@@ -725,16 +900,23 @@ function render() {
     const pending = items.filter(i => !i.checked);
     const purchased = items.filter(i => i.checked);
 
-    const renderRow = (item) => `
+    const renderRow = (item) => {
+      const qty = item.qty != null ? item.qty : 1;
+      const price = item.price || 0;
+      const rowTotal = qty * price;
+      const rowTotalHtml = rowTotal > 0 ? `<span class="row-total">£${rowTotal.toFixed(2)}</span>` : '';
+      return `
       <li class="item ${item.checked ? 'checked' : ''}">
         <div class="item-top">
           <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
           <div class="item-name">${escapeHtml(item.name)}</div>
-          <input type="number" min="1" class="qty-input" value="${item.qty != null ? item.qty : 1}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
+          <input type="number" min="1" class="qty-input" value="${qty}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
           <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${item.price ? item.price : ''}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
+          ${rowTotalHtml}
           <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
         </div>
       </li>`;
+    };
 
     const storeTotalGbp = items.reduce((sum, i) => sum + (i.qty != null ? i.qty : 1) * (i.price || 0), 0);
     const storeTotalIls = storeTotalGbp * 4;
