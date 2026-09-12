@@ -320,7 +320,6 @@
   .item{
     display:flex;
     flex-direction:column;
-    gap:4px;
     padding:10px 10px;
     border-radius:3px;
   }
@@ -329,25 +328,16 @@
   .item-top{
     display:flex;
     align-items:center;
-    gap:12px;
+    gap:10px;
   }
 
-  .item-qty-row{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    margin-inline-start:36px;
-  }
-  .item-qty-row label{
-    font-size:12px;
-    color:var(--muted);
-  }
   .qty-input{
-    width:56px;
+    width:44px;
+    flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
     border-radius:3px;
-    padding:4px 8px;
+    padding:4px 6px;
     font-family:'Heebo',sans-serif;
     font-size:13.5px;
     color:var(--ink);
@@ -680,11 +670,8 @@ function render() {
             <div class="item-top">
               <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
               <div class="item-name">${escapeHtml(item.name)}</div>
-              <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
-            </div>
-            <div class="item-qty-row">
-              <label>כמות</label>
               <input type="number" min="1" class="qty-input" value="${item.qty != null ? item.qty : 1}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
+              <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
             </div>
           </li>
         `).join('') + '</ul>';
