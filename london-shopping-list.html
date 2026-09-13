@@ -244,19 +244,100 @@
     flex-shrink:0;
   }
   .day-del:hover{color:var(--red);}
-  .day-textarea{
-    width:100%;
-    border:none;
-    background:transparent;
-    padding:14px;
-    font-family:'Heebo',sans-serif;
-    font-size:14.5px;
-    color:var(--ink);
-    resize:vertical;
-    min-height:90px;
-    line-height:1.6;
+
+  .activities{
+    list-style:none;
+    margin:0;
+    padding:6px 8px;
   }
-  .day-textarea:focus{outline:none;}
+  .activity-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:8px 8px;
+    border-bottom:1px solid var(--line);
+  }
+  .activity-row:last-child{border-bottom:none;}
+  .activity-time{
+    width:56px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:6px 4px;
+    font-family:'Heebo',sans-serif;
+    font-size:12.5px;
+    color:var(--ink);
+    text-align:center;
+  }
+  .activity-time:focus{outline:none; border-color:var(--gold);}
+  .activity-title{
+    flex:1;
+    min-width:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:6px 10px;
+    font-family:'Heebo',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+  }
+  .activity-title:focus{outline:none; border-color:var(--gold);}
+  .activity-imgzone{
+    width:52px;
+    height:52px;
+    flex-shrink:0;
+    border:1.5px dashed var(--line);
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    overflow:hidden;
+    background:#fff;
+    position:relative;
+  }
+  .activity-imgzone.drag-over{
+    border-color:var(--red);
+    background:#FBEAEA;
+  }
+  .activity-imgzone img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .activity-imgzone .plus{
+    font-size:18px;
+    color:var(--muted);
+  }
+  .activity-imgzone input[type="file"]{
+    display:none;
+  }
+  .activity-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:15px;
+    cursor:pointer;
+    padding:2px 6px;
+    flex-shrink:0;
+  }
+  .activity-del:hover{color:var(--red);}
+  .add-activity-row{
+    padding:8px 12px 14px;
+  }
+  .add-activity-row button{
+    width:100%;
+    background:var(--paper);
+    border:1px solid var(--navy);
+    color:var(--navy);
+    border-radius:3px;
+    padding:8px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .add-activity-row button:hover{background:var(--navy); color:var(--paper);}
 
   /* Progress summary */
   .summary{
@@ -789,7 +870,7 @@ async function addDay() {
   if (!currentUser) return;
   const daysRef = collection(db, ...DAYS_PATH);
   const label = `יום ${days.length + 1}`;
-  await addDoc(daysRef, { label, text: '', createdAt: serverTimestamp() });
+  await addDoc(daysRef, { label, activities: [], createdAt: serverTimestamp() });
 }
 
 window.deleteDay = async function(dayId) {
@@ -802,9 +883,70 @@ window.updateDayLabel = async function(dayId, value) {
   await setDoc(doc(db, ...DAYS_PATH, dayId), { label: value }, { merge: true });
 };
 
-window.updateDayText = async function(dayId, value) {
+window.addActivity = async function(dayId) {
   if (!currentUser) return;
-  await setDoc(doc(db, ...DAYS_PATH, dayId), { text: value }, { merge: true });
+  const day = days.find(d => d.id === dayId);
+  const newActs = [...(day.activities || []), { id: cryptoRandomId(), time: '', title: '', image: '' }];
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+};
+
+window.deleteActivity = async function(dayId, actId) {
+  if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  const newActs = (day.activities || []).filter(a => a.id !== actId);
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+};
+
+window.updateActivityField = async function(dayId, actId, field, value) {
+  if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  const newActs = (day.activities || []).map(a => a.id === actId ? { ...a, [field]: value } : a);
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+};
+
+// Compress an image file into a small base64 data URL so it fits comfortably in Firestore
+function compressImageFile(file, maxDim = 640, quality = 0.6) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+window.handleActivityImageInput = async function(dayId, actId, inputEl) {
+  const file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await compressImageFile(file);
+    await window.updateActivityField(dayId, actId, 'image', dataUrl);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+window.handleActivityDrop = async function(ev, dayId, actId) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag-over');
+  const file = ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  try {
+    const dataUrl = await compressImageFile(file);
+    await window.updateActivityField(dayId, actId, 'image', dataUrl);
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 function renderDays() {
@@ -812,15 +954,38 @@ function renderDays() {
     daysContainer.innerHTML = '<div class="empty-state"><div class="big">עוד אין ימים בתוכנית</div><div>הוסיפו יום ראשון למעלה כדי להתחיל</div></div>';
     return;
   }
-  daysContainer.innerHTML = days.map(day => `
-    <div class="day-card">
-      <div class="day-head">
-        <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
-        <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
+  daysContainer.innerHTML = days.map(day => {
+    const activities = day.activities || [];
+    const rowsHtml = activities.length === 0
+      ? '<div class="empty-store">עוד אין פעילויות ליום הזה</div>'
+      : '<ul class="activities">' + activities.map(act => `
+          <li class="activity-row">
+            <input type="text" class="activity-time" placeholder="שעה" value="${escapeHtml(act.time || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'time', this.value)">
+            <input type="text" class="activity-title" placeholder="פעילות..." value="${escapeHtml(act.title || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'title', this.value)">
+            <label class="activity-imgzone"
+                   ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="handleActivityDrop(event, '${day.id}', '${act.id}')">
+              ${act.image ? `<img src="${act.image}">` : '<span class="plus">+</span>'}
+              <input type="file" accept="image/*" onchange="handleActivityImageInput('${day.id}', '${act.id}', this)">
+            </label>
+            <button class="activity-del" onclick="deleteActivity('${day.id}', '${act.id}')">✕</button>
+          </li>
+        `).join('') + '</ul>';
+
+    return `
+      <div class="day-card">
+        <div class="day-head">
+          <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
+          <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
+        </div>
+        ${rowsHtml}
+        <div class="add-activity-row">
+          <button onclick="addActivity('${day.id}')">+ הוסף פעילות</button>
+        </div>
       </div>
-      <textarea class="day-textarea" placeholder="מה נעשה ביום הזה..." onchange="updateDayText('${day.id}', this.value)">${escapeHtml(day.text || '')}</textarea>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 addStoreBtn.addEventListener('click', addStore);
