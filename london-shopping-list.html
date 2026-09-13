@@ -473,6 +473,27 @@
   }
   .store-del:hover{color:var(--red);}
 
+  .collapse-btn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    cursor:pointer;
+    padding:2px 4px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .collapse-btn svg{
+    width:16px;
+    height:16px;
+    transition:transform 0.15s ease;
+  }
+  .collapse-btn.collapsed svg{
+    transform:rotate(-90deg);
+  }
+  .collapse-btn:hover{color:var(--navy);}
+
   .items{
     list-style:none;
     margin:0;
@@ -766,6 +787,24 @@ let currentUser = null;
 let stores = [];
 let days = [];
 let unsubscribeStores = null;
+const collapsedStores = new Set();
+const collapsedDays = new Set();
+
+window.toggleStoreCollapse = function(storeId) {
+  if (collapsedStores.has(storeId)) collapsedStores.delete(storeId);
+  else collapsedStores.add(storeId);
+  render();
+};
+
+window.toggleDayCollapse = function(dayId) {
+  if (collapsedDays.has(dayId)) collapsedDays.delete(dayId);
+  else collapsedDays.add(dayId);
+  renderDays();
+};
+
+function chevronSvg() {
+  return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
 let unsubscribeDays = null;
 
 const loginScreen = document.getElementById('loginScreen');
@@ -973,16 +1012,20 @@ function renderDays() {
           </li>
         `).join('') + '</ul>';
 
+    const isCollapsed = collapsedDays.has(day.id);
     return `
       <div class="day-card">
         <div class="day-head">
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleDayCollapse('${day.id}')">${chevronSvg()}</button>
           <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
           <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
         </div>
-        ${rowsHtml}
-        <div class="add-activity-row">
-          <button onclick="addActivity('${day.id}')">+ הוסף פעילות</button>
-        </div>
+        ${isCollapsed ? '' : `
+          ${rowsHtml}
+          <div class="add-activity-row">
+            <button onclick="addActivity('${day.id}')">+ הוסף פעילות</button>
+          </div>
+        `}
       </div>
     `;
   }).join('');
@@ -1131,9 +1174,11 @@ function render() {
       <ul class="items purchased-list">${purchased.map(renderRow).join('')}</ul>
     `;
 
+    const isCollapsed = collapsedStores.has(store.id);
     return `
       <div class="store">
         <div class="store-head">
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleStoreCollapse('${store.id}')">${chevronSvg()}</button>
           <div class="store-title-row">
             <div class="store-mark"></div>
             <input type="text" class="store-name" value="${escapeHtml(store.name)}" onchange="updateStoreName('${store.id}', this.value)">
@@ -1141,13 +1186,15 @@ function render() {
           </div>
           <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
         </div>
-        ${pendingHtml}
-        ${purchasedHtml}
-        ${totalHtml}
-        <div class="add-item">
-          <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
-          <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
-        </div>
+        ${isCollapsed ? '' : `
+          ${pendingHtml}
+          ${purchasedHtml}
+          ${totalHtml}
+          <div class="add-item">
+            <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
+            <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
+          </div>
+        `}
       </div>
     `;
   }).join('');
