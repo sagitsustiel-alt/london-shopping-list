@@ -81,6 +81,45 @@
     align-items:center;
     gap:8px;
   }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .lang-toggle-row{
+    display:flex;
+    gap:4px;
+  }
+  .lang-btn{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#C9CEDB;
+    border-radius:12px;
+    padding:3px 9px;
+    font-size:11px;
+    font-family:'Heebo',sans-serif;
+    cursor:pointer;
+  }
+  .lang-btn.active{
+    background:var(--paper);
+    color:var(--navy);
+    border-color:var(--paper);
+    font-weight:600;
+  }
+  .login-lang-toggle{
+    justify-content:center;
+    margin-bottom:18px;
+  }
+  .login-lang-toggle .lang-btn{
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .login-lang-toggle .lang-btn.active{
+    background:var(--navy);
+    color:var(--paper);
+    border-color:var(--navy);
+  }
   .tube-dot{
     width:10px;height:10px;border-radius:50%;background:var(--red);
     flex-shrink:0;
@@ -211,17 +250,17 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:4px;
-    margin-bottom:8px;
+    margin-bottom:4px;
     overflow:hidden;
   }
   .day-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:12px 14px;
+    padding:6px 10px;
     border-bottom:1px solid var(--line);
     background:linear-gradient(180deg, #FFFDF9, var(--paper));
-    gap:10px;
+    gap:8px;
   }
   .day-label-input{
     flex:1;
@@ -416,14 +455,14 @@
     background:var(--paper);
     border:1px solid var(--line);
     border-radius:4px;
-    margin-bottom:10px;
+    margin-bottom:4px;
     overflow:hidden;
   }
   .store-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    padding:14px 16px;
+    padding:6px 10px;
     border-bottom:1px solid var(--line);
     background:linear-gradient(180deg, #FFFDF9, var(--paper));
   }
@@ -472,6 +511,42 @@
     flex-shrink:0;
   }
   .store-del:hover{color:var(--red);}
+
+  .cc-badge{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+    font-size:11px;
+    font-weight:700;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:3px 8px;
+    cursor:pointer;
+    user-select:none;
+    background:#fff;
+  }
+  .cc-badge.active{
+    color:#fff;
+    background:var(--red);
+    border-color:var(--red);
+  }
+
+  .drag-handle{
+    flex-shrink:0;
+    cursor:grab;
+    color:var(--muted);
+    touch-action:none;
+    padding:2px 4px;
+    font-size:14px;
+    line-height:1;
+    letter-spacing:-1px;
+  }
+  .drag-handle:active{cursor:grabbing;}
+  .store.dragging, .item.dragging{
+    opacity:0.5;
+  }
 
   .collapse-btn{
     background:none;
@@ -547,10 +622,7 @@
     font-weight:700;
     font-size:13.5px;
     color:var(--navy);
-    width:80px;
-    min-width:80px;
-    direction:ltr;
-    font-variant-numeric:tabular-nums;
+    min-width:46px;
     text-align:center;
   }
 
@@ -706,12 +778,16 @@
 
   <!-- LOGIN SCREEN -->
   <div class="wrap login-screen" id="loginScreen">
+    <div class="lang-toggle-row login-lang-toggle">
+      <button class="lang-btn" id="langBtnHe" onclick="setLanguage('he')">עברית</button>
+      <button class="lang-btn" id="langBtnEn" onclick="setLanguage('en')">English</button>
+    </div>
     <div class="login-card">
-      <div class="login-title">רשימת קניות - לונדון</div>
-      <div class="login-sub">מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.</div>
+      <div class="login-title" id="loginTitle">רשימת קניות - לונדון</div>
+      <div class="login-sub" id="loginSub">מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.</div>
       <button class="google-btn" id="loginBtn">
         <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20.4H24v7.2h11.3c-1.6 4.6-6 7.9-11.3 7.9-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l5.9 4.3C13.7 15.6 18.5 12.4 24 12.4c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4c-7.4 0-13.8 4.2-17 10.3z"/><path fill="#4CAF50" d="M24 44c5 0 9.5-1.9 12.9-5.1l-6-4.9c-2 1.4-4.6 2.3-7 2.3-5.3 0-9.7-3.4-11.3-8.1l-6 4.6C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20.4H24v7.2h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6 4.9C40.5 35.1 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
-        התחברות עם Google
+        <span id="loginBtnText">התחברות עם Google</span>
       </button>
       <div class="login-error hidden" id="loginError">משהו השתבש בהתחברות. נסי שוב.</div>
     </div>
@@ -723,12 +799,18 @@
       <div class="eyebrow-row">
         <div class="eyebrow-left">
           <div class="tube-dot"></div>
-          <div class="eyebrow">טיול ללונדון</div>
+          <div class="eyebrow" id="eyebrowText">טיול ללונדון</div>
         </div>
-        <button class="user-chip" id="userChip"></button>
+        <div class="header-right">
+          <div class="lang-toggle-row">
+            <button class="lang-btn" id="langBtnHeApp" onclick="setLanguage('he')">עברית</button>
+            <button class="lang-btn" id="langBtnEnApp" onclick="setLanguage('en')">English</button>
+          </div>
+          <button class="user-chip" id="userChip"></button>
+        </div>
       </div>
       <h1>LISTS</h1>
-      <div class="sub">חנות אחרי חנות — מה לקנות, ומה כבר נקנה</div>
+      <div class="sub" id="subText">חנות אחרי חנות — מה לקנות, ומה כבר נקנה</div>
     </header>
 
     <div class="tabs">
@@ -742,7 +824,7 @@
       <div class="summary">
         <div>
           <div class="num" id="summaryNum">0 / 0</div>
-          <div class="lbl">פריטים נקנו</div>
+          <div class="lbl" id="summaryLbl">פריטים נקנו</div>
         </div>
         <div class="summary-bar"><div class="summary-bar-fill" id="summaryBar" style="width:0%"></div></div>
         <div class="lbl" id="summaryPct">0%</div>
@@ -772,7 +854,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
   getFirestore, collection, doc, setDoc, onSnapshot,
-  deleteDoc, addDoc, serverTimestamp, query, orderBy
+  deleteDoc, addDoc, serverTimestamp, query, orderBy, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -812,6 +894,55 @@ window.toggleDayCollapse = function(dayId) {
 function chevronSvg() {
   return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 }
+
+// Generic pointer-based drag-to-reorder: works with mouse AND touch (iPhone Safari included).
+// rootEl: an ancestor element to delegate pointerdown from (doesn't need to change across renders).
+// itemSelector / handleSelector: CSS classes (no dot) for the draggable row and its grab handle.
+// onDrop(newIdOrder, container) fires once the user releases, with the new sibling order (by
+// data-id) and the actual parent element the drag happened within (so callers can find context,
+// e.g. which store a reordered item belongs to).
+function enableDragReorder(rootEl, itemSelector, handleSelector, onDrop) {
+  rootEl.addEventListener('pointerdown', (e) => {
+    const handle = e.target.closest('.' + handleSelector);
+    if (!handle) return;
+    const dragEl = handle.closest('.' + itemSelector);
+    if (!dragEl) return;
+    const container = dragEl.parentElement;
+    if (!container) return;
+    e.preventDefault();
+    dragEl.classList.add('dragging');
+    try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+
+    const onMove = (ev) => {
+      const y = ev.clientY;
+      const items = [...container.querySelectorAll(':scope > .' + itemSelector)].filter(el => el !== dragEl);
+      for (const sib of items) {
+        const rect = sib.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        const dragIsAfter = !!(dragEl.compareDocumentPosition(sib) & Node.DOCUMENT_POSITION_PRECEDING);
+        if (y < mid && dragIsAfter) {
+          container.insertBefore(dragEl, sib);
+          break;
+        } else if (y > mid && !dragIsAfter) {
+          container.insertBefore(dragEl, sib.nextSibling);
+          break;
+        }
+      }
+    };
+    const onUp = () => {
+      dragEl.classList.remove('dragging');
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('pointercancel', onUp);
+      const newOrder = [...container.querySelectorAll(':scope > .' + itemSelector)].map(el => el.dataset.id);
+      onDrop(newOrder, container);
+    };
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('pointercancel', onUp);
+  });
+}
+
 let unsubscribeDays = null;
 
 const loginScreen = document.getElementById('loginScreen');
@@ -843,6 +974,109 @@ window.switchView = function(view) {
   }
 };
 
+// ---- Language / i18n ----
+const I18N = {
+  he: {
+    loginTitle: 'רשימת קניות - לונדון',
+    loginSub: 'מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.',
+    loginBtnText: 'התחברות עם Google',
+    loginError: 'משהו השתבש בהתחברות. נסי שוב.',
+    eyebrow: 'טיול ללונדון',
+    sub: 'חנות אחרי חנות — מה לקנות, ומה כבר נקנה',
+    tabShopping: 'רשימת קניות',
+    tabItinerary: 'תוכנית יומית',
+    syncNote: 'שומר אוטומטית לחשבון שלך',
+    summaryLbl: 'פריטים נקנו',
+    newStorePh: 'שם חנות חדשה, למשל Harrods',
+    addStoreBtn: 'הוסף חנות',
+    addDayBtn: '+ הוסף יום',
+    emptyStores: 'עוד אין חנויות ברשימה',
+    emptyStoresSub: 'הוסיפו חנות ראשונה למעלה כדי להתחיל',
+    emptyStore: 'אין עדיין פריטים בחנות הזו',
+    allBought: 'כל הפריטים נקנו 🎉',
+    purchased: 'נקנו',
+    total: 'סה"כ',
+    addItemPh: 'פריט חדש...',
+    addItemBtn: 'הוסף',
+    emptyDays: 'עוד אין ימים בתוכנית',
+    emptyDaysSub: 'הוסיפו יום ראשון למעלה כדי להתחיל',
+    emptyActivities: 'עוד אין פעילויות ליום הזה',
+    addActivityBtn: '+ הוסף פעילות',
+    timePh: 'שעה',
+    activityPh: 'פעילות...',
+    dayLabel: (n) => `יום ${n}`,
+    logoutConfirm: 'להתנתק מהחשבון?'
+  },
+  en: {
+    loginTitle: 'London Shopping List',
+    loginSub: 'Sign in with your Google account so the list is saved and available every time, on any device.',
+    loginBtnText: 'Sign in with Google',
+    loginError: 'Something went wrong signing in. Please try again.',
+    eyebrow: 'London Trip',
+    sub: 'Store by store — what to buy, and what\u2019s already bought',
+    tabShopping: 'Shopping List',
+    tabItinerary: 'Daily Plan',
+    syncNote: 'Auto-saved to your account',
+    summaryLbl: 'items bought',
+    newStorePh: 'New store name, e.g. Harrods',
+    addStoreBtn: 'Add store',
+    addDayBtn: '+ Add day',
+    emptyStores: 'No stores in the list yet',
+    emptyStoresSub: 'Add your first store above to get started',
+    emptyStore: 'No items in this store yet',
+    allBought: 'All items bought 🎉',
+    purchased: 'Bought',
+    total: 'Total',
+    addItemPh: 'New item...',
+    addItemBtn: 'Add',
+    emptyDays: 'No days in the plan yet',
+    emptyDaysSub: 'Add your first day above to get started',
+    emptyActivities: 'No activities for this day yet',
+    addActivityBtn: '+ Add activity',
+    timePh: 'Time',
+    activityPh: 'Activity...',
+    dayLabel: (n) => `Day ${n}`,
+    logoutConfirm: 'Sign out of your account?'
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'he';
+
+function t(key) {
+  return I18N[currentLang][key];
+}
+
+window.setLanguage = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  applyStaticTranslations();
+  render();
+  renderDays();
+};
+
+function applyStaticTranslations() {
+  const dict = I18N[currentLang];
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+
+  document.getElementById('loginTitle').textContent = dict.loginTitle;
+  document.getElementById('loginSub').textContent = dict.loginSub;
+  document.getElementById('loginBtnText').textContent = dict.loginBtnText;
+  loginError.textContent = dict.loginError;
+  document.getElementById('eyebrowText').textContent = dict.eyebrow;
+  document.getElementById('subText').textContent = dict.sub;
+  tabShoppingBtn.textContent = dict.tabShopping;
+  tabItineraryBtn.textContent = dict.tabItinerary;
+  document.getElementById('syncNote').textContent = dict.syncNote;
+  document.getElementById('summaryLbl').textContent = dict.summaryLbl;
+  newStoreInput.placeholder = dict.newStorePh;
+  addStoreBtn.textContent = dict.addStoreBtn;
+  addDayBtn.textContent = dict.addDayBtn;
+
+  ['langBtnHe', 'langBtnHeApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'he'));
+  ['langBtnEn', 'langBtnEnApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'en'));
+}
+
 loginBtn.addEventListener('click', async () => {
   loginError.classList.add('hidden');
   try {
@@ -859,8 +1093,10 @@ loginBtn.addEventListener('click', async () => {
 
 getRedirectResult(auth).catch(err => console.error(err));
 
+applyStaticTranslations();
+
 userChip.addEventListener('click', async () => {
-  if (confirm('להתנתק מהחשבון?')) {
+  if (confirm(t('logoutConfirm'))) {
     await signOut(auth);
   }
 });
@@ -893,6 +1129,8 @@ function listenToStores() {
   const q = query(storesRef, orderBy('createdAt', 'asc'));
   unsubscribeStores = onSnapshot(q, (snapshot) => {
     stores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Stable sort: stores without an explicit 'order' keep their createdAt order
+    stores.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     render();
   }, (err) => {
     console.error(err);
@@ -915,7 +1153,7 @@ addDayBtn.addEventListener('click', addDay);
 async function addDay() {
   if (!currentUser) return;
   const daysRef = collection(db, ...DAYS_PATH);
-  const label = `יום ${days.length + 1}`;
+  const label = t('dayLabel')(days.length + 1);
   await addDoc(daysRef, { label, activities: [], createdAt: serverTimestamp() });
 }
 
@@ -997,17 +1235,17 @@ window.handleActivityDrop = async function(ev, dayId, actId) {
 
 function renderDays() {
   if (days.length === 0) {
-    daysContainer.innerHTML = '<div class="empty-state"><div class="big">עוד אין ימים בתוכנית</div><div>הוסיפו יום ראשון למעלה כדי להתחיל</div></div>';
+    daysContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyDays')}</div><div>${t('emptyDaysSub')}</div></div>`;
     return;
   }
   daysContainer.innerHTML = days.map(day => {
     const activities = day.activities || [];
     const rowsHtml = activities.length === 0
-      ? '<div class="empty-store">עוד אין פעילויות ליום הזה</div>'
+      ? `<div class="empty-store">${t('emptyActivities')}</div>`
       : '<ul class="activities">' + activities.map(act => `
           <li class="activity-row">
-            <input type="text" class="activity-time" placeholder="שעה" value="${escapeHtml(act.time || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'time', this.value)">
-            <input type="text" class="activity-title" placeholder="פעילות..." value="${escapeHtml(act.title || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'title', this.value)">
+            <input type="text" class="activity-time" placeholder="${t('timePh')}" value="${escapeHtml(act.time || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'time', this.value)">
+            <input type="text" class="activity-title" placeholder="${t('activityPh')}" value="${escapeHtml(act.title || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'title', this.value)">
             <label class="activity-imgzone"
                    ondragover="event.preventDefault(); this.classList.add('drag-over')"
                    ondragleave="this.classList.remove('drag-over')"
@@ -1030,7 +1268,7 @@ function renderDays() {
         ${isCollapsed ? '' : `
           ${rowsHtml}
           <div class="add-activity-row">
-            <button onclick="addActivity('${day.id}')">+ הוסף פעילות</button>
+            <button onclick="addActivity('${day.id}')">${t('addActivityBtn')}</button>
           </div>
         `}
       </div>
@@ -1041,13 +1279,36 @@ function renderDays() {
 addStoreBtn.addEventListener('click', addStore);
 newStoreInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addStore(); });
 
+enableDragReorder(storesContainer, 'store', 'store-drag-handle', (newOrder) => {
+  window.reorderStores(newOrder);
+});
+enableDragReorder(storesContainer, 'item', 'item-drag-handle', (newOrder, container) => {
+  const storeEl = container.closest('.store');
+  if (storeEl) window.reorderItems(storeEl.dataset.id, newOrder);
+});
+
 async function addStore() {
   const name = newStoreInput.value.trim();
   if (!name || !currentUser) return;
   newStoreInput.value = '';
   const storesRef = collection(db, ...SHARED_PATH);
-  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' });
+  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '', order: stores.length, clickCollect: false });
 }
+
+window.toggleClickCollect = async function(storeId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { clickCollect: !store.clickCollect }, { merge: true });
+};
+
+window.reorderStores = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...SHARED_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
+};
 
 window.deleteStore = async function(storeId) {
   if (!currentUser) return;
@@ -1104,6 +1365,17 @@ window.updateItemName = async function(storeId, itemId, value) {
   await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
 
+window.reorderItems = async function(storeId, newPendingIdOrder) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  const items = store.items || [];
+  const purchased = items.filter(i => i.checked);
+  const byId = Object.fromEntries(items.map(i => [i.id, i]));
+  const reorderedPending = newPendingIdOrder.map(id => byId[id]).filter(Boolean);
+  const newItems = [...reorderedPending, ...purchased];
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
 window.deleteItem = async function(storeId, itemId) {
   if (!currentUser) return;
   const store = stores.find(s => s.id === storeId);
@@ -1133,7 +1405,7 @@ function render() {
   document.getElementById('summaryPct').textContent = pct + '%';
 
   if (stores.length === 0) {
-    storesContainer.innerHTML = '<div class="empty-state"><div class="big">עוד אין חנויות ברשימה</div><div>הוסיפו חנות ראשונה למעלה כדי להתחיל</div></div>';
+    storesContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyStores')}</div><div>${t('emptyStoresSub')}</div></div>`;
     return;
   }
 
@@ -1143,18 +1415,20 @@ function render() {
     const pending = items.filter(i => !i.checked);
     const purchased = items.filter(i => i.checked);
 
-    const renderRow = (item) => {
+    const renderRow = (item, draggable) => {
       const qty = item.qty != null ? item.qty : 1;
       const price = item.price || 0;
       const rowTotal = qty * price;
-      const rowTotalHtml = `<span class="row-total">£${rowTotal.toFixed(2)}</span>`;
+      const rowTotalHtml = rowTotal > 0 ? `<span class="row-total">£${rowTotal.toFixed(2)}</span>` : '';
+      const handleHtml = draggable ? '<span class="drag-handle item-drag-handle">⠿</span>' : '<span class="drag-handle" style="visibility:hidden">⠿</span>';
       return `
-      <li class="item ${item.checked ? 'checked' : ''}">
+      <li class="item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
         <div class="item-top">
+          ${handleHtml}
           <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
           <input type="text" class="item-name" value="${escapeHtml(item.name)}" onchange="updateItemName('${store.id}', '${item.id}', this.value)">
           <input type="number" min="1" class="qty-input" value="${qty}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
-          <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${price}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
+          <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${item.price ? item.price : ''}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
           ${rowTotalHtml}
           <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
         </div>
@@ -1165,30 +1439,32 @@ function render() {
     const storeTotalIls = storeTotalGbp * 4;
     const totalHtml = storeTotalGbp === 0 ? '' : `
       <div class="store-total">
-        <span class="label">סה"כ</span>
+        <span class="label">${t('total')}</span>
         <span class="amounts"><span class="gbp">£${storeTotalGbp.toFixed(2)}</span><span class="ils">₪${storeTotalIls.toFixed(2)}</span></span>
       </div>
     `;
 
     const pendingHtml = pending.length === 0
       ? (items.length === 0
-          ? '<div class="empty-store">אין עדיין פריטים בחנות הזו</div>'
-          : '<div class="empty-store">כל הפריטים נקנו 🎉</div>')
-      : '<ul class="items">' + pending.map(renderRow).join('') + '</ul>';
+          ? `<div class="empty-store">${t('emptyStore')}</div>`
+          : `<div class="empty-store">${t('allBought')}</div>`)
+      : '<ul class="items">' + pending.map(i => renderRow(i, true)).join('') + '</ul>';
 
     const purchasedHtml = purchased.length === 0 ? '' : `
-      <div class="purchased-divider">נקנו (${purchased.length})</div>
-      <ul class="items purchased-list">${purchased.map(renderRow).join('')}</ul>
+      <div class="purchased-divider">${t('purchased')} (${purchased.length})</div>
+      <ul class="items purchased-list">${purchased.map(i => renderRow(i, false)).join('')}</ul>
     `;
 
     const isCollapsed = collapsedStores.has(store.id);
     return `
-      <div class="store">
+      <div class="store" data-id="${store.id}">
         <div class="store-head">
+          <span class="drag-handle store-drag-handle">⠿</span>
           <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleStoreCollapse('${store.id}')">${chevronSvg()}</button>
           <div class="store-title-row">
             <div class="store-mark"></div>
             <input type="text" class="store-name" value="${escapeHtml(store.name)}" onchange="updateStoreName('${store.id}', this.value)">
+            <div class="cc-badge ${store.clickCollect ? 'active' : ''}" onclick="toggleClickCollect('${store.id}')">C&amp;C</div>
             <div class="store-count">${checkedCount}/${items.length}</div>
           </div>
           <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
@@ -1198,8 +1474,8 @@ function render() {
           ${purchasedHtml}
           ${totalHtml}
           <div class="add-item">
-            <input type="text" placeholder="פריט חדש..." onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
-            <button onclick="addItem('${store.id}', this.previousElementSibling)">הוסף</button>
+            <input type="text" placeholder="${t('addItemPh')}" onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
+            <button onclick="addItem('${store.id}', this.previousElementSibling)">${t('addItemBtn')}</button>
           </div>
         `}
       </div>
