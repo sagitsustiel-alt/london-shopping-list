@@ -234,16 +234,37 @@
     border:1px solid var(--line);
     color:var(--muted);
     border-radius:4px;
-    padding:10px 12px;
+    padding:10px 4px;
     font-family:'Heebo',sans-serif;
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
     cursor:pointer;
+    white-space:nowrap;
   }
   .tab-btn.active{
     background:var(--navy);
     color:var(--paper);
     border-color:var(--navy);
+  }
+
+  /* "Today is ..." banner at the top of the daily plan */
+  .today-banner{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:var(--navy);
+    color:var(--paper);
+    border-radius:4px;
+    padding:12px 16px;
+    margin-bottom:16px;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:16px;
+  }
+  .today-banner .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--red);
+    flex-shrink:0;
   }
 
   .day-card{
@@ -323,8 +344,8 @@
   }
   .activity-title:focus{outline:none; border-color:var(--gold);}
   .activity-imgzone{
-    width:52px;
-    height:52px;
+    width:84px;
+    height:84px;
     flex-shrink:0;
     border:1.5px dashed var(--line);
     border-radius:4px;
@@ -449,6 +470,8 @@
   }
   .add-store button:hover{background:var(--navy-2);}
   .add-store button:disabled{opacity:0.5; cursor:default;}
+  /* "Add day" sits alone in its row, so it needs its own vertical padding */
+  #addDayBtn{padding:12px 22px;}
 
   /* Store card */
   .store{
@@ -544,7 +567,7 @@
     letter-spacing:-1px;
   }
   .drag-handle:active{cursor:grabbing;}
-  .store.dragging, .item.dragging{
+  .store.dragging, .item.dragging, .day-card.dragging{
     opacity:0.5;
   }
 
@@ -585,44 +608,46 @@
   .item-top{
     display:flex;
     align-items:center;
-    gap:10px;
+    gap:5px;
   }
 
+  /* The numbers are secondary: keep them compact and quiet so the item name
+     gets as much room as possible. */
   .qty-input{
-    width:44px;
+    width:32px;
     flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
     border-radius:3px;
-    padding:4px 6px;
+    padding:3px 2px;
     font-family:'Heebo',sans-serif;
-    font-size:13.5px;
-    color:var(--ink);
+    font-size:12px;
+    color:var(--muted);
     text-align:center;
   }
-  .qty-input:focus{outline:none; border-color:var(--gold);}
+  .qty-input:focus{outline:none; border-color:var(--gold); color:var(--ink);}
 
   .price-input{
-    width:64px;
+    width:48px;
     flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
     border-radius:3px;
-    padding:4px 6px;
+    padding:3px 2px;
     font-family:'Heebo',sans-serif;
-    font-size:13.5px;
-    color:var(--ink);
+    font-size:12px;
+    color:var(--muted);
     text-align:center;
   }
-  .price-input:focus{outline:none; border-color:var(--gold);}
+  .price-input:focus{outline:none; border-color:var(--gold); color:var(--ink);}
 
   .row-total{
     flex-shrink:0;
     font-family:'Frank Ruhl Libre', serif;
     font-weight:700;
-    font-size:13.5px;
+    font-size:12px;
     color:var(--navy);
-    min-width:46px;
+    min-width:38px;
     text-align:center;
   }
 
@@ -816,6 +841,7 @@
     <div class="tabs">
       <button class="tab-btn active" id="tabShoppingBtn" onclick="switchView('shopping')">רשימת קניות</button>
       <button class="tab-btn" id="tabItineraryBtn" onclick="switchView('itinerary')">תוכנית יומית</button>
+      <button class="tab-btn" id="tabPackingBtn" onclick="switchView('packing')">רשימת אריזה</button>
     </div>
 
     <div class="sync-note" id="syncNote">שומר אוטומטית לחשבון שלך</div>
@@ -839,10 +865,29 @@
     </div>
 
     <div id="itineraryView" class="hidden">
+      <div class="today-banner" id="todayBanner"></div>
       <div class="add-store">
         <button id="addDayBtn">+ הוסף יום</button>
       </div>
       <div id="daysContainer"></div>
+    </div>
+
+    <div id="packingView" class="hidden">
+      <div class="summary">
+        <div>
+          <div class="num" id="packSummaryNum">0 / 0</div>
+          <div class="lbl" id="packSummaryLbl">פריטים נארזו</div>
+        </div>
+        <div class="summary-bar"><div class="summary-bar-fill" id="packSummaryBar" style="width:0%"></div></div>
+        <div class="lbl" id="packSummaryPct">0%</div>
+      </div>
+
+      <div class="add-store">
+        <input type="text" id="newTopicInput" placeholder="נושא חדש, למשל אלן / אמבטיה">
+        <button id="addTopicBtn">הוסף נושא</button>
+      </div>
+
+      <div id="packingContainer"></div>
     </div>
   </div>
 
@@ -875,21 +920,95 @@ const provider = new GoogleAuthProvider();
 let currentUser = null;
 let stores = [];
 let days = [];
+let packing = [];
 let unsubscribeStores = null;
-const collapsedStores = new Set();
-const collapsedDays = new Set();
+
+// Everything starts CLOSED. These sets hold what the user has explicitly opened,
+// so an empty set means "all collapsed" (the default on every page).
+const expandedStores = new Set();
+const expandedDays = new Set();
+const expandedTopics = new Set();
+
+// Set to true while a drag is in progress, so an incoming Firestore snapshot
+// doesn't re-render (and destroy) the element under the user's finger.
+let isDragging = false;
 
 window.toggleStoreCollapse = function(storeId) {
-  if (collapsedStores.has(storeId)) collapsedStores.delete(storeId);
-  else collapsedStores.add(storeId);
+  if (expandedStores.has(storeId)) expandedStores.delete(storeId);
+  else expandedStores.add(storeId);
   render();
 };
 
 window.toggleDayCollapse = function(dayId) {
-  if (collapsedDays.has(dayId)) collapsedDays.delete(dayId);
-  else collapsedDays.add(dayId);
+  if (expandedDays.has(dayId)) expandedDays.delete(dayId);
+  else expandedDays.add(dayId);
   renderDays();
 };
+
+window.toggleTopicCollapse = function(topicId) {
+  if (expandedTopics.has(topicId)) expandedTopics.delete(topicId);
+  else expandedTopics.add(topicId);
+  renderPacking();
+};
+
+/* ---------- Today's date ---------- */
+
+const DAY_NAMES = {
+  he: ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'],
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+};
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function todayText() {
+  const d = new Date();
+  const date = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  const dayName = DAY_NAMES[currentLang][d.getDay()];
+  return currentLang === 'he'
+    ? `היום ${date} · יום ${dayName}`
+    : `Today ${date} · ${dayName}`;
+}
+
+// Pull a date out of a free-text day label like "יום 1 - 28/09/26".
+// Accepts 2- or 4-digit years and / . - separators. Returns null if there is none.
+function parseLabelDate(label) {
+  if (!label) return null;
+  const m = String(label).match(/(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})/);
+  if (!m) return null;
+  const day = parseInt(m[1], 10);
+  const month = parseInt(m[2], 10);
+  let year = parseInt(m[3], 10);
+  if (year < 100) year += 2000;
+  const d = new Date(year, month - 1, day);
+  if (isNaN(d.getTime()) || d.getDate() !== day || d.getMonth() !== month - 1) return null;
+  return d;
+}
+
+function labelIsToday(label) {
+  const d = parseLabelDate(label);
+  if (!d) return false;
+  const now = new Date();
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+// Which calendar day the "open today's card" default was last applied for, so it
+// re-applies by itself when the date rolls over while the page stays open.
+let expandedDaysInitializedFor = null;
+
+function applyTodayDefault() {
+  // Nothing loaded yet — don't burn the once-per-day initialisation on an empty
+  // list, or the real days would arrive with nothing opened.
+  if (days.length === 0) return;
+  const key = todayKey();
+  if (expandedDaysInitializedFor === key) return;
+  expandedDaysInitializedFor = key;
+  expandedDays.clear();
+  const today = days.find(d => labelIsToday(d.label));
+  if (today) expandedDays.add(today.id);
+}
 
 function chevronSvg() {
   return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -911,9 +1030,15 @@ function enableDragReorder(rootEl, itemSelector, handleSelector, onDrop) {
     if (!container) return;
     e.preventDefault();
     dragEl.classList.add('dragging');
-    try { handle.setPointerCapture(e.pointerId); } catch (err) {}
+    isDragging = true;
 
+    // The move/up listeners live on `document`, NOT on the handle. Earlier this
+    // relied on pointer capture staying attached to the handle, but moving the
+    // row with insertBefore() detaches and re-attaches it, which drops the
+    // capture and killed the drag after the first step. Listening on the
+    // document survives all of that.
     const onMove = (ev) => {
+      ev.preventDefault();
       const y = ev.clientY;
       const items = [...container.querySelectorAll(':scope > .' + itemSelector)].filter(el => el !== dragEl);
       for (const sib of items) {
@@ -930,20 +1055,22 @@ function enableDragReorder(rootEl, itemSelector, handleSelector, onDrop) {
       }
     };
     const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
       dragEl.classList.remove('dragging');
-      handle.removeEventListener('pointermove', onMove);
-      handle.removeEventListener('pointerup', onUp);
-      handle.removeEventListener('pointercancel', onUp);
+      isDragging = false;
       const newOrder = [...container.querySelectorAll(':scope > .' + itemSelector)].map(el => el.dataset.id);
       onDrop(newOrder, container);
     };
-    handle.addEventListener('pointermove', onMove);
-    handle.addEventListener('pointerup', onUp);
-    handle.addEventListener('pointercancel', onUp);
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
   });
 }
 
 let unsubscribeDays = null;
+let unsubscribePacking = null;
 
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
@@ -959,19 +1086,24 @@ const tabShoppingBtn = document.getElementById('tabShoppingBtn');
 const tabItineraryBtn = document.getElementById('tabItineraryBtn');
 const daysContainer = document.getElementById('daysContainer');
 const addDayBtn = document.getElementById('addDayBtn');
+const packingView = document.getElementById('packingView');
+const tabPackingBtn = document.getElementById('tabPackingBtn');
+const packingContainer = document.getElementById('packingContainer');
+const newTopicInput = document.getElementById('newTopicInput');
+const addTopicBtn = document.getElementById('addTopicBtn');
+const todayBanner = document.getElementById('todayBanner');
 
 window.switchView = function(view) {
-  if (view === 'shopping') {
-    shoppingView.classList.remove('hidden');
-    itineraryView.classList.add('hidden');
-    tabShoppingBtn.classList.add('active');
-    tabItineraryBtn.classList.remove('active');
-  } else {
-    shoppingView.classList.add('hidden');
-    itineraryView.classList.remove('hidden');
-    tabShoppingBtn.classList.remove('active');
-    tabItineraryBtn.classList.add('active');
-  }
+  const views = {
+    shopping: [shoppingView, tabShoppingBtn],
+    itinerary: [itineraryView, tabItineraryBtn],
+    packing: [packingView, tabPackingBtn]
+  };
+  Object.keys(views).forEach(key => {
+    const [viewEl, tabEl] = views[key];
+    viewEl.classList.toggle('hidden', key !== view);
+    tabEl.classList.toggle('active', key === view);
+  });
 };
 
 // ---- Language / i18n ----
@@ -1005,7 +1137,22 @@ const I18N = {
     timePh: 'שעה',
     activityPh: 'פעילות...',
     dayLabel: (n) => `יום ${n}`,
-    logoutConfirm: 'להתנתק מהחשבון?'
+    logoutConfirm: 'להתנתק מהחשבון?',
+    tabPacking: 'רשימת אריזה',
+    packSummaryLbl: 'פריטים נארזו',
+    newTopicPh: 'נושא חדש, למשל אלן / אמבטיה',
+    addTopicBtn: 'הוסף נושא',
+    emptyTopics: 'עוד אין נושאים ברשימת האריזה',
+    emptyTopicsSub: 'הוסיפו נושא ראשון למעלה, למשל אלן, אמא, אמבטיה או ויזה',
+    emptyTopic: 'אין עדיין פריטים בנושא הזה',
+    allPacked: 'הכל נארז 🎉',
+    packed: 'נארזו',
+    confirmDeleteStore: (name) => `למחוק את החנות "${name}" וכל הפריטים שבה?`,
+    confirmDeleteItem: (name) => `למחוק את הפריט "${name}"?`,
+    confirmDeleteDay: (name) => `למחוק את "${name}" וכל הפעילויות שבו?`,
+    confirmDeleteActivity: (name) => `למחוק את הפעילות "${name}"?`,
+    confirmDeleteTopic: (name) => `למחוק את הנושא "${name}" וכל הפריטים שבו?`,
+    thisActivity: 'הזו'
   },
   en: {
     loginTitle: 'London Shopping List',
@@ -1013,7 +1160,7 @@ const I18N = {
     loginBtnText: 'Sign in with Google',
     loginError: 'Something went wrong signing in. Please try again.',
     eyebrow: 'London Trip',
-    sub: 'Store by store — what to buy, and what\u2019s already bought',
+    sub: 'Store by store — what to buy, and what’s already bought',
     tabShopping: 'Shopping List',
     tabItinerary: 'Daily Plan',
     syncNote: 'Auto-saved to your account',
@@ -1036,7 +1183,22 @@ const I18N = {
     timePh: 'Time',
     activityPh: 'Activity...',
     dayLabel: (n) => `Day ${n}`,
-    logoutConfirm: 'Sign out of your account?'
+    logoutConfirm: 'Sign out of your account?',
+    tabPacking: 'Packing List',
+    packSummaryLbl: 'items packed',
+    newTopicPh: 'New topic, e.g. Alen / Bathroom',
+    addTopicBtn: 'Add topic',
+    emptyTopics: 'No topics in the packing list yet',
+    emptyTopicsSub: 'Add your first topic above, e.g. Alen, Mom, Bathroom or Visa',
+    emptyTopic: 'No items in this topic yet',
+    allPacked: 'Everything packed 🎉',
+    packed: 'Packed',
+    confirmDeleteStore: (name) => `Delete the store "${name}" and all its items?`,
+    confirmDeleteItem: (name) => `Delete the item "${name}"?`,
+    confirmDeleteDay: (name) => `Delete "${name}" and all its activities?`,
+    confirmDeleteActivity: (name) => `Delete the activity "${name}"?`,
+    confirmDeleteTopic: (name) => `Delete the topic "${name}" and all its items?`,
+    thisActivity: 'this one'
   }
 };
 
@@ -1052,7 +1214,12 @@ window.setLanguage = function(lang) {
   applyStaticTranslations();
   render();
   renderDays();
+  renderPacking();
 };
+
+function renderTodayBanner() {
+  todayBanner.innerHTML = `<span class="dot"></span><span>${escapeHtml(todayText())}</span>`;
+}
 
 function applyStaticTranslations() {
   const dict = I18N[currentLang];
@@ -1072,6 +1239,11 @@ function applyStaticTranslations() {
   newStoreInput.placeholder = dict.newStorePh;
   addStoreBtn.textContent = dict.addStoreBtn;
   addDayBtn.textContent = dict.addDayBtn;
+  tabPackingBtn.textContent = dict.tabPacking;
+  document.getElementById('packSummaryLbl').textContent = dict.packSummaryLbl;
+  newTopicInput.placeholder = dict.newTopicPh;
+  addTopicBtn.textContent = dict.addTopicBtn;
+  renderTodayBanner();
 
   ['langBtnHe', 'langBtnHeApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'he'));
   ['langBtnEn', 'langBtnEnApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'en'));
@@ -1095,6 +1267,17 @@ getRedirectResult(auth).catch(err => console.error(err));
 
 applyStaticTranslations();
 
+// If the app is left open past midnight, the banner and the "today's day is the
+// open one" default refresh themselves without a reload.
+let lastSeenDay = todayKey();
+setInterval(() => {
+  const key = todayKey();
+  if (key !== lastSeenDay) {
+    lastSeenDay = key;
+    renderDays();
+  }
+}, 60000);
+
 userChip.addEventListener('click', async () => {
   if (confirm(t('logoutConfirm'))) {
     await signOut(auth);
@@ -1105,6 +1288,7 @@ onAuthStateChanged(auth, (user) => {
   currentUser = user;
   if (unsubscribeStores) { unsubscribeStores(); unsubscribeStores = null; }
   if (unsubscribeDays) { unsubscribeDays(); unsubscribeDays = null; }
+  if (unsubscribePacking) { unsubscribePacking(); unsubscribePacking = null; }
 
   if (user) {
     loginScreen.classList.add('hidden');
@@ -1112,17 +1296,20 @@ onAuthStateChanged(auth, (user) => {
     userChip.innerHTML = `<img src="${user.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(user.displayName ? user.displayName.split(' ')[0] : 'יציאה')}`;
     listenToStores();
     listenToDays();
+    listenToPacking();
   } else {
     appScreen.classList.add('hidden');
     loginScreen.classList.remove('hidden');
     stores = [];
     days = [];
+    packing = [];
   }
 });
 
 // Shared list: everyone who signs in reads/writes the same collection
 const SHARED_PATH = ['trips', 'london', 'stores'];
 const DAYS_PATH = ['trips', 'london', 'days'];
+const PACKING_PATH = ['trips', 'london', 'packing'];
 
 function listenToStores() {
   const storesRef = collection(db, ...SHARED_PATH);
@@ -1142,7 +1329,20 @@ function listenToDays() {
   const q = query(daysRef, orderBy('createdAt', 'asc'));
   unsubscribeDays = onSnapshot(q, (snapshot) => {
     days = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    days.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
     renderDays();
+  }, (err) => {
+    console.error(err);
+  });
+}
+
+function listenToPacking() {
+  const packingRef = collection(db, ...PACKING_PATH);
+  const q = query(packingRef, orderBy('createdAt', 'asc'));
+  unsubscribePacking = onSnapshot(q, (snapshot) => {
+    packing = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    packing.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    renderPacking();
   }, (err) => {
     console.error(err);
   });
@@ -1153,13 +1353,35 @@ addDayBtn.addEventListener('click', addDay);
 async function addDay() {
   if (!currentUser) return;
   const daysRef = collection(db, ...DAYS_PATH);
-  const label = t('dayLabel')(days.length + 1);
-  await addDoc(daysRef, { label, activities: [], createdAt: serverTimestamp() });
+  let label = t('dayLabel')(days.length + 1);
+  // If the previous day's label carries a date, continue the sequence with the
+  // next calendar date, keeping the same "יום N - DD/MM/YY" shape.
+  const last = days[days.length - 1];
+  const lastDate = last ? parseLabelDate(last.label) : null;
+  if (lastDate) {
+    lastDate.setDate(lastDate.getDate() + 1);
+    const dd = String(lastDate.getDate()).padStart(2, '0');
+    const mm = String(lastDate.getMonth() + 1).padStart(2, '0');
+    const yy = String(lastDate.getFullYear()).slice(2);
+    label += ` - ${dd}/${mm}/${yy}`;
+  }
+  await addDoc(daysRef, { label, activities: [], order: days.length, createdAt: serverTimestamp() });
 }
 
 window.deleteDay = async function(dayId) {
   if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  if (!confirm(t('confirmDeleteDay')(day && day.label ? day.label : t('dayLabel')('')))) return;
   await deleteDoc(doc(db, ...DAYS_PATH, dayId));
+};
+
+window.reorderDays = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...DAYS_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
 };
 
 window.updateDayLabel = async function(dayId, value) {
@@ -1177,6 +1399,10 @@ window.addActivity = async function(dayId) {
 window.deleteActivity = async function(dayId, actId) {
   if (!currentUser) return;
   const day = days.find(d => d.id === dayId);
+  if (!day) return;
+  const act = (day.activities || []).find(a => a.id === actId);
+  const name = act && act.title ? act.title : t('thisActivity');
+  if (!confirm(t('confirmDeleteActivity')(name))) return;
   const newActs = (day.activities || []).filter(a => a.id !== actId);
   await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
 };
@@ -1234,6 +1460,9 @@ window.handleActivityDrop = async function(ev, dayId, actId) {
 };
 
 function renderDays() {
+  if (isDragging) return;
+  renderTodayBanner();
+  applyTodayDefault();
   if (days.length === 0) {
     daysContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyDays')}</div><div>${t('emptyDaysSub')}</div></div>`;
     return;
@@ -1257,10 +1486,11 @@ function renderDays() {
           </li>
         `).join('') + '</ul>';
 
-    const isCollapsed = collapsedDays.has(day.id);
+    const isCollapsed = !expandedDays.has(day.id);
     return `
-      <div class="day-card">
+      <div class="day-card" data-id="${day.id}">
         <div class="day-head">
+          <span class="drag-handle day-drag-handle">⠿</span>
           <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleDayCollapse('${day.id}')">${chevronSvg()}</button>
           <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
           <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
@@ -1286,6 +1516,19 @@ enableDragReorder(storesContainer, 'item', 'item-drag-handle', (newOrder, contai
   const storeEl = container.closest('.store');
   if (storeEl) window.reorderItems(storeEl.dataset.id, newOrder);
 });
+enableDragReorder(daysContainer, 'day-card', 'day-drag-handle', (newOrder) => {
+  window.reorderDays(newOrder);
+});
+enableDragReorder(packingContainer, 'store', 'topic-drag-handle', (newOrder) => {
+  window.reorderTopics(newOrder);
+});
+enableDragReorder(packingContainer, 'item', 'pack-item-drag-handle', (newOrder, container) => {
+  const topicEl = container.closest('.store');
+  if (topicEl) window.reorderPackItems(topicEl.dataset.id, newOrder);
+});
+
+addTopicBtn.addEventListener('click', addTopic);
+newTopicInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTopic(); });
 
 async function addStore() {
   const name = newStoreInput.value.trim();
@@ -1312,6 +1555,8 @@ window.reorderStores = async function(newIdOrder) {
 
 window.deleteStore = async function(storeId) {
   if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  if (!confirm(t('confirmDeleteStore')(store ? store.name : ''))) return;
   await deleteDoc(doc(db, ...SHARED_PATH, storeId));
 };
 
@@ -1379,9 +1624,169 @@ window.reorderItems = async function(storeId, newPendingIdOrder) {
 window.deleteItem = async function(storeId, itemId) {
   if (!currentUser) return;
   const store = stores.find(s => s.id === storeId);
+  if (!store) return;
+  const item = (store.items || []).find(i => i.id === itemId);
+  if (!confirm(t('confirmDeleteItem')(item ? item.name : ''))) return;
   const newItems = (store.items || []).filter(i => i.id !== itemId);
   await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
 };
+
+/* ---------- Packing list ---------- */
+
+async function addTopic() {
+  const name = newTopicInput.value.trim();
+  if (!name || !currentUser) return;
+  newTopicInput.value = '';
+  const packingRef = collection(db, ...PACKING_PATH);
+  await addDoc(packingRef, { name, items: [], order: packing.length, createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' });
+}
+
+window.deleteTopic = async function(topicId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  if (!confirm(t('confirmDeleteTopic')(topic ? topic.name : ''))) return;
+  await deleteDoc(doc(db, ...PACKING_PATH, topicId));
+};
+
+window.updateTopicName = async function(topicId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { name }, { merge: true });
+};
+
+window.addPackItem = async function(topicId, inputEl) {
+  const name = inputEl.value.trim();
+  if (!name || !currentUser) return;
+  inputEl.value = '';
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = [...(topic.items || []), { id: cryptoRandomId(), name, checked: false }];
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.togglePackItem = async function(topicId, itemId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = (topic.items || []).map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.updatePackItemName = async function(topicId, itemId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = (topic.items || []).map(i => i.id === itemId ? { ...i, name } : i);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.deletePackItem = async function(topicId, itemId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  if (!topic) return;
+  const item = (topic.items || []).find(i => i.id === itemId);
+  if (!confirm(t('confirmDeleteItem')(item ? item.name : ''))) return;
+  const newItems = (topic.items || []).filter(i => i.id !== itemId);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.reorderTopics = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...PACKING_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
+};
+
+window.reorderPackItems = async function(topicId, newPendingIdOrder) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  const items = topic.items || [];
+  const packed = items.filter(i => i.checked);
+  const byId = Object.fromEntries(items.map(i => [i.id, i]));
+  const reorderedPending = newPendingIdOrder.map(id => byId[id]).filter(Boolean);
+  const newItems = [...reorderedPending, ...packed];
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+function renderPacking() {
+  if (isDragging) return;
+
+  let totalItems = 0, packedItems = 0;
+  packing.forEach(p => {
+    const items = p.items || [];
+    totalItems += items.length;
+    packedItems += items.filter(i => i.checked).length;
+  });
+
+  document.getElementById('packSummaryNum').textContent = packedItems + ' / ' + totalItems;
+  const pct = totalItems ? Math.round((packedItems / totalItems) * 100) : 0;
+  document.getElementById('packSummaryBar').style.width = pct + '%';
+  document.getElementById('packSummaryPct').textContent = pct + '%';
+
+  if (packing.length === 0) {
+    packingContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyTopics')}</div><div>${t('emptyTopicsSub')}</div></div>`;
+    return;
+  }
+
+  packingContainer.innerHTML = packing.map(topic => {
+    const items = topic.items || [];
+    const checkedCount = items.filter(i => i.checked).length;
+    const pending = items.filter(i => !i.checked);
+    const packed = items.filter(i => i.checked);
+
+    const renderRow = (item, draggable) => {
+      const handleHtml = draggable
+        ? '<span class="drag-handle pack-item-drag-handle">⠿</span>'
+        : '<span class="drag-handle" style="visibility:hidden">⠿</span>';
+      return `
+      <li class="item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
+        <div class="item-top">
+          ${handleHtml}
+          <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="togglePackItem('${topic.id}', '${item.id}')">${checkmarkSvg()}</div>
+          <input type="text" class="item-name" value="${escapeHtml(item.name)}" onchange="updatePackItemName('${topic.id}', '${item.id}', this.value)">
+          <button class="item-del" onclick="deletePackItem('${topic.id}', '${item.id}')">✕</button>
+        </div>
+      </li>`;
+    };
+
+    const pendingHtml = pending.length === 0
+      ? (items.length === 0
+          ? `<div class="empty-store">${t('emptyTopic')}</div>`
+          : `<div class="empty-store">${t('allPacked')}</div>`)
+      : '<ul class="items">' + pending.map(i => renderRow(i, true)).join('') + '</ul>';
+
+    const packedHtml = packed.length === 0 ? '' : `
+      <div class="purchased-divider">${t('packed')} (${packed.length})</div>
+      <ul class="items purchased-list">${packed.map(i => renderRow(i, false)).join('')}</ul>
+    `;
+
+    const isCollapsed = !expandedTopics.has(topic.id);
+    return `
+      <div class="store" data-id="${topic.id}">
+        <div class="store-head">
+          <span class="drag-handle topic-drag-handle">⠿</span>
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleTopicCollapse('${topic.id}')">${chevronSvg()}</button>
+          <div class="store-title-row">
+            <div class="store-mark"></div>
+            <input type="text" class="store-name" value="${escapeHtml(topic.name)}" onchange="updateTopicName('${topic.id}', this.value)">
+            <div class="store-count">${checkedCount}/${items.length}</div>
+          </div>
+          <button class="store-del" onclick="deleteTopic('${topic.id}')">✕</button>
+        </div>
+        ${isCollapsed ? '' : `
+          ${pendingHtml}
+          ${packedHtml}
+          <div class="add-item">
+            <input type="text" placeholder="${t('addItemPh')}" onkeydown="if(event.key==='Enter') addPackItem('${topic.id}', this)">
+            <button onclick="addPackItem('${topic.id}', this.previousElementSibling)">${t('addItemBtn')}</button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
 
 function cryptoRandomId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -1392,6 +1797,7 @@ function checkmarkSvg() {
 }
 
 function render() {
+  if (isDragging) return;
   let totalItems = 0, checkedItems = 0;
   stores.forEach(s => {
     const items = s.items || [];
@@ -1455,7 +1861,7 @@ function render() {
       <ul class="items purchased-list">${purchased.map(i => renderRow(i, false)).join('')}</ul>
     `;
 
-    const isCollapsed = collapsedStores.has(store.id);
+    const isCollapsed = !expandedStores.has(store.id);
     return `
       <div class="store" data-id="${store.id}">
         <div class="store-head">
