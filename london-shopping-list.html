@@ -6,6 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="קניות לונדון">
+<!-- Freshness is handled by sw.js (network-first), which also makes the app work
+     with no connection at all. -->
 <!-- iOS ignores data: URIs for apple-touch-icon, so the home-screen icon has to
      point at a real file sitting next to this page. The browser-tab favicon
      below can stay embedded. -->
@@ -214,9 +216,38 @@
   .google-btn svg{width:18px;height:18px;flex-shrink:0;}
   .login-error{
     color:var(--red);
-    font-size:13px;
+    font-size:14px;
     margin-top:14px;
   }
+  .code-input{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:4px;
+    padding:14px 12px;
+    margin-bottom:14px;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:30px;
+    letter-spacing:0.5em;
+    text-indent:0.5em;
+    text-align:center;
+    color:var(--navy);
+  }
+  .code-input:focus{outline:none; border-color:var(--gold);}
+  .google-fallback{
+    display:block;
+    width:100%;
+    margin-top:16px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Heebo',sans-serif;
+    font-size:13px;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .google-fallback:hover{color:var(--navy);}
 
   /* Sync status */
   .sync-note{
@@ -239,7 +270,7 @@
     border-radius:4px;
     padding:10px 4px;
     font-family:'Heebo',sans-serif;
-    font-size:13px;
+    font-size:14.5px;
     font-weight:600;
     cursor:pointer;
     white-space:nowrap;
@@ -292,9 +323,9 @@
     background:transparent;
     font-family:'Frank Ruhl Libre', serif;
     font-weight:700;
-    font-size:17px;
+    font-size:19px;
     color:var(--navy);
-    padding:4px 2px;
+    padding:2px 2px;
   }
   .day-label-input:focus{outline:none; border-bottom:1px solid var(--gold);}
   .day-del{
@@ -322,14 +353,14 @@
   }
   .activity-row:last-child{border-bottom:none;}
   .activity-time{
-    width:48px;
+    width:56px;
     flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
     border-radius:3px;
-    padding:4px 3px;
+    padding:3px 3px;
     font-family:'Heebo',sans-serif;
-    font-size:12px;
+    font-size:14px;
     color:var(--ink);
     text-align:center;
   }
@@ -342,7 +373,7 @@
     border-radius:3px;
     padding:4px 8px;
     font-family:'Heebo',sans-serif;
-    font-size:13.5px;
+    font-size:16px;
     color:var(--ink);
   }
   .activity-title:focus{outline:none; border-color:var(--gold);}
@@ -416,11 +447,11 @@
   .summary .num{
     font-family:'Frank Ruhl Libre', serif;
     font-weight:700;
-    font-size:22px;
+    font-size:25px;
     color:var(--navy);
   }
   .summary .lbl{
-    font-size:12.5px;
+    font-size:14px;
     color:var(--muted);
     margin-top:2px;
   }
@@ -452,7 +483,7 @@
     border-radius:4px;
     padding:12px 14px;
     font-family:'Heebo',sans-serif;
-    font-size:15px;
+    font-size:16.5px;
     color:var(--ink);
   }
   .add-store input:focus{
@@ -508,7 +539,7 @@
   .store-name{
     font-family:'Frank Ruhl Libre', serif;
     font-weight:700;
-    font-size:19px;
+    font-size:21px;
     color:var(--navy);
     white-space:nowrap;
     overflow:hidden;
@@ -521,7 +552,7 @@
   }
   .store-name:focus{outline:none; border-bottom:1px solid var(--gold);}
   .store-count{
-    font-size:12.5px;
+    font-size:14px;
     color:var(--muted);
     flex-shrink:0;
     margin-inline-start:10px;
@@ -617,7 +648,7 @@
   /* The numbers are secondary: keep them compact and quiet so the item name
      gets as much room as possible. */
   .qty-input{
-    width:32px;
+    width:34px;
     flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
@@ -631,7 +662,7 @@
   .qty-input:focus{outline:none; border-color:var(--gold); color:var(--ink);}
 
   .price-input{
-    width:48px;
+    width:54px;
     flex-shrink:0;
     border:1px solid var(--line);
     background:#fff;
@@ -648,7 +679,7 @@
     flex-shrink:0;
     font-family:'Frank Ruhl Libre', serif;
     font-weight:700;
-    font-size:12px;
+    font-size:13px;
     color:var(--navy);
     min-width:38px;
     text-align:center;
@@ -661,7 +692,7 @@
     padding:10px 16px;
     border-top:1px solid var(--line);
     background:#F6F1E4;
-    font-size:13.5px;
+    font-size:15px;
   }
   .store-total .label{
     color:var(--muted);
@@ -712,13 +743,14 @@
 
   .item-name{
     flex:1;
-    font-size:15px;
+    font-size:18px;
     color:var(--ink);
     min-width:0;
     border:none;
     background:transparent;
     font-family:'Heebo',sans-serif;
-    padding:2px 0;
+    padding:0;
+    line-height:1.25;
   }
   .item-name:focus{outline:none; border-bottom:1px solid var(--gold);}
   .item.checked .item-name{
@@ -750,9 +782,9 @@
     border:1px solid var(--line);
     background:#fff;
     border-radius:3px;
-    padding:9px 12px;
+    padding:8px 12px;
     font-family:'Heebo',sans-serif;
-    font-size:14px;
+    font-size:16px;
     color:var(--ink);
   }
   .add-item input:focus{outline:none; border-color:var(--gold);}
@@ -762,7 +794,7 @@
     color:var(--navy);
     border-radius:3px;
     padding:0 16px;
-    font-size:13.5px;
+    font-size:15px;
     font-weight:600;
     cursor:pointer;
   }
@@ -772,12 +804,12 @@
     padding:18px 16px;
     text-align:center;
     color:var(--muted);
-    font-size:13.5px;
+    font-size:15px;
   }
 
   .purchased-divider{
     padding:10px 16px 4px;
-    font-size:12px;
+    font-size:13.5px;
     font-weight:600;
     color:var(--muted);
     border-top:1px solid var(--line);
@@ -816,7 +848,7 @@
     z-index:60;
     max-width:calc(100% - 32px);
     font-family:'Heebo',sans-serif;
-    font-size:14px;
+    font-size:15px;
     animation:undo-in 0.18s ease-out;
   }
   @keyframes undo-in{
@@ -844,6 +876,13 @@
     font-weight:600;
     cursor:pointer;
   }
+  .undo-toast.error{
+    background:var(--red);
+  }
+  .undo-toast.error .msg{
+    white-space:normal;
+    line-height:1.4;
+  }
   .undo-btn svg{
     width:16px;
     height:16px;
@@ -858,7 +897,7 @@
 </head>
 <body>
 
-  <!-- LOGIN SCREEN -->
+  <!-- LOCK SCREEN -->
   <div class="wrap login-screen" id="loginScreen">
     <div class="lang-toggle-row login-lang-toggle">
       <button class="lang-btn" id="langBtnHe" onclick="setLanguage('he')">עברית</button>
@@ -866,12 +905,11 @@
     </div>
     <div class="login-card">
       <div class="login-title" id="loginTitle">רשימת קניות - לונדון</div>
-      <div class="login-sub" id="loginSub">מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.</div>
-      <button class="google-btn" id="loginBtn">
-        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20.4H24v7.2h11.3c-1.6 4.6-6 7.9-11.3 7.9-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l5.9 4.3C13.7 15.6 18.5 12.4 24 12.4c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4c-7.4 0-13.8 4.2-17 10.3z"/><path fill="#4CAF50" d="M24 44c5 0 9.5-1.9 12.9-5.1l-6-4.9c-2 1.4-4.6 2.3-7 2.3-5.3 0-9.7-3.4-11.3-8.1l-6 4.6C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20.4H24v7.2h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6 4.9C40.5 35.1 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
-        <span id="loginBtnText">התחברות עם Google</span>
-      </button>
-      <div class="login-error hidden" id="loginError">משהו השתבש בהתחברות. נסי שוב.</div>
+      <div class="login-sub" id="loginSub">הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.</div>
+      <input class="code-input" id="codeInput" type="tel" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+      <button class="google-btn" id="codeBtn"><span id="codeBtnText">כניסה</span></button>
+      <div class="login-error hidden" id="loginError">קוד שגוי. נסי שוב.</div>
+      <button class="google-fallback" id="loginBtn"><span id="loginBtnText">או להתחבר עם Google</span></button>
     </div>
   </div>
 
@@ -960,11 +998,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
-  getRedirectResult, onAuthStateChanged, signOut,
+  getRedirectResult, onAuthStateChanged, signOut, signInAnonymously,
   setPersistence, indexedDBLocalPersistence, browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import {
-  getFirestore, collection, doc, setDoc, onSnapshot,
+  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+  collection, doc, setDoc, onSnapshot,
   deleteDoc, addDoc, serverTimestamp, query, orderBy, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -980,7 +1019,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getFirestore(app);
+
+// Keep a full local copy of the lists on the device. This is what lets the app
+// open, read and edit with no connection at all (on a plane, or with roaming
+// off); everything written offline syncs by itself once there is signal again.
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} catch (err) {
+  console.error('offline cache unavailable, falling back', err);
+  db = getFirestore(app);
+}
 const provider = new GoogleAuthProvider();
 
 // Hold the sign-in on this device for as long as the browser allows, so closing
@@ -1152,6 +1203,8 @@ let unsubscribePacking = null;
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
 const loginBtn = document.getElementById('loginBtn');
+const codeInput = document.getElementById('codeInput');
+const codeBtn = document.getElementById('codeBtn');
 const loginError = document.getElementById('loginError');
 const userChip = document.getElementById('userChip');
 const storesContainer = document.getElementById('storesContainer');
@@ -1190,9 +1243,16 @@ window.switchView = function(view) {
 const I18N = {
   he: {
     loginTitle: 'רשימת קניות - לונדון',
-    loginSub: 'מתחברים עם חשבון Google כדי שהרשימה תישמר ותהיה זמינה בכל ביקור, מכל מכשיר.',
-    loginBtnText: 'התחברות עם Google',
-    loginError: 'משהו השתבש בהתחברות. נסי שוב.',
+    loginSub: 'הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.',
+    loginBtnText: 'או להתחבר עם Google',
+    loginError: 'קוד שגוי. נסי שוב.',
+    codeBtnText: 'כניסה',
+    lock: 'נעילה',
+    lockConfirm: 'לנעול את האפליקציה במכשיר הזה? תצטרכי להקליד את הקוד שוב.',
+    signInFailed: 'ההתחברות נכשלה. נסי שוב.',
+    anonDisabled: 'צריך להפעיל ב-Firebase את ההתחברות האנונימית (Authentication ← Sign-in method ← Anonymous).',
+    offlineNote: 'אין חיבור — השינויים נשמרים במכשיר ויסתנכרנו לבד',
+    offlineFirstRun: 'אין חיבור, וזו הפעם הראשונה במכשיר הזה. צריך לפתוח פעם אחת עם אינטרנט.',
     eyebrow: 'טיול ללונדון',
     tabShopping: 'רשימת קניות',
     tabItinerary: 'תוכנית יומית',
@@ -1233,13 +1293,23 @@ const I18N = {
     confirmDeleteTopic: (name) => `למחוק את הנושא "${name}" וכל הפריטים שבו?`,
     thisActivity: 'הזו',
     deletedMsg: (name) => name ? `נמחק: "${name}"` : 'נמחק',
-    undo: 'בטל'
+    undo: 'בטל',
+    saveFailed: 'השמירה נכשלה. ייתכן שאין הרשאת כתיבה לרשימה הזו בהגדרות Firebase.',
+    loadFailed: 'לא הצלחתי לטעון את הנתונים. בדקי את החיבור לאינטרנט.',
+    loadFailedPacking: 'רשימת האריזה לא נטענת — כללי ההרשאות ב-Firebase כנראה לא מכסים אותה.'
   },
   en: {
     loginTitle: 'London Shopping List',
-    loginSub: 'Sign in with your Google account so the list is saved and available every time, on any device.',
-    loginBtnText: 'Sign in with Google',
-    loginError: 'Something went wrong signing in. Please try again.',
+    loginSub: 'Enter the access code. You only need to do this once on this device.',
+    loginBtnText: 'or sign in with Google',
+    loginError: 'Wrong code. Try again.',
+    codeBtnText: 'Enter',
+    lock: 'Lock',
+    lockConfirm: 'Lock the app on this device? You will need the code again.',
+    signInFailed: 'Sign-in failed. Please try again.',
+    anonDisabled: 'Anonymous sign-in must be enabled in Firebase (Authentication > Sign-in method > Anonymous).',
+    offlineNote: 'Offline — changes are saved on this device and will sync by themselves',
+    offlineFirstRun: 'No connection, and this is the first run on this device. Open it once with internet.',
     eyebrow: 'London Trip',
     tabShopping: 'Shopping List',
     tabItinerary: 'Daily Plan',
@@ -1280,7 +1350,10 @@ const I18N = {
     confirmDeleteTopic: (name) => `Delete the topic "${name}" and all its items?`,
     thisActivity: 'this one',
     deletedMsg: (name) => name ? `Deleted: "${name}"` : 'Deleted',
-    undo: 'Undo'
+    undo: 'Undo',
+    saveFailed: 'Save failed. Firebase may not allow writing to this list.',
+    loadFailed: 'Could not load the data. Check your connection.',
+    loadFailedPacking: 'The packing list will not load — the Firebase rules probably do not cover it.'
   }
 };
 
@@ -1313,7 +1386,8 @@ const UNDO_SECONDS = 12;
 function offerUndo(name, undoFn) {
   pendingUndo = undoFn;
   undoMsg.textContent = t('deletedMsg')(name);
-  undoToast.classList.remove('hidden');
+  undoBtn.classList.remove('hidden');
+  undoToast.classList.remove('error', 'hidden');
   clearTimeout(undoTimer);
   undoTimer = setTimeout(hideUndo, UNDO_SECONDS * 1000);
 }
@@ -1322,6 +1396,27 @@ function hideUndo() {
   clearTimeout(undoTimer);
   pendingUndo = null;
   undoToast.classList.add('hidden');
+}
+
+// Surface a failed read/write instead of letting it fail silently — a denied
+// Firestore rule used to look exactly like "the button does nothing".
+function showError(text) {
+  clearTimeout(undoTimer);
+  pendingUndo = null;
+  undoMsg.textContent = text;
+  undoBtn.classList.add('hidden');
+  undoToast.classList.add('error');
+  undoToast.classList.remove('hidden');
+  undoTimer = setTimeout(hideUndo, 9000);
+}
+
+async function attempt(fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error(err);
+    showError(t('saveFailed'));
+  }
 }
 
 undoBtn.addEventListener('click', async () => {
@@ -1351,11 +1446,12 @@ function applyStaticTranslations() {
   document.getElementById('loginTitle').textContent = dict.loginTitle;
   document.getElementById('loginSub').textContent = dict.loginSub;
   document.getElementById('loginBtnText').textContent = dict.loginBtnText;
+  document.getElementById('codeBtnText').textContent = dict.codeBtnText;
   loginError.textContent = dict.loginError;
   document.getElementById('eyebrowText').textContent = dict.eyebrow;
   tabShoppingBtn.textContent = dict.tabShopping;
   tabItineraryBtn.textContent = dict.tabItinerary;
-  document.getElementById('syncNote').textContent = dict.syncNote;
+  updateConnectionNote();
   document.getElementById('summaryLbl').textContent = dict.summaryLbl;
   newStoreInput.placeholder = dict.newStorePh;
   addStoreBtn.textContent = dict.addStoreBtn;
@@ -1371,24 +1467,110 @@ function applyStaticTranslations() {
   ['langBtnEn', 'langBtnEnApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'en'));
 }
 
+/* ---------- Access code ----------
+   The app signs in to Firebase silently in the background; the code below is
+   only the door on this device. It is stored as a salted hash so the digits
+   are not sitting in plain sight in the page source. */
+const CODE_SALT = 'lists-london-v1:';
+const CODE_HASH = 'e3433f652a24d977f3caae7b8a738875c9de8acf0ef12c587413ed1c0dfa1ca9';
+const UNLOCK_KEY = 'lists_unlock';
+
+async function hashCode(code) {
+  const bytes = new TextEncoder().encode(CODE_SALT + code);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function deviceUnlocked() {
+  try { return localStorage.getItem(UNLOCK_KEY) === CODE_HASH; } catch (e) { return false; }
+}
+
+function markUnlocked() {
+  try { localStorage.setItem(UNLOCK_KEY, CODE_HASH); } catch (e) {}
+}
+
+window.lockDevice = function() {
+  try { localStorage.removeItem(UNLOCK_KEY); } catch (e) {}
+  showLockScreen();
+};
+
+function showLockScreen() {
+  appScreen.classList.add('hidden');
+  loginScreen.classList.remove('hidden');
+  codeInput.value = '';
+  loginError.classList.add('hidden');
+}
+
+function showApp() {
+  loginScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+}
+
+async function submitCode() {
+  const code = codeInput.value.trim();
+  if (code.length < 4) return;
+  const ok = (await hashCode(code)) === CODE_HASH;
+  if (!ok) {
+    loginError.classList.remove('hidden');
+    codeInput.value = '';
+    return;
+  }
+  markUnlocked();
+  loginError.classList.add('hidden');
+  showApp();
+}
+
+codeBtn.addEventListener('click', submitCode);
+codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
+codeInput.addEventListener('input', () => {
+  codeInput.value = codeInput.value.replace(/\D/g, '');
+  loginError.classList.add('hidden');
+  if (codeInput.value.length === 4) submitCode();
+});
+
+// Escape hatch: signing in with a Google account also opens the app, in case
+// anything ever goes wrong with the code flow mid-trip.
 loginBtn.addEventListener('click', async () => {
   loginError.classList.add('hidden');
   try {
     if (isStandalone) { await signInWithRedirect(auth, provider); return; }
     await signInWithPopup(auth, provider);
+    markUnlocked();
+    showApp();
   } catch (err) {
     console.error(err);
-    // popup blocked or unsupported (common on some mobile browsers) -> fallback to redirect
     if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/cancelled-popup-request') {
       try { await signInWithRedirect(auth, provider); return; } catch (e2) { console.error(e2); }
     }
-    loginError.classList.remove('hidden');
+    showError(t('signInFailed'));
   }
 });
 
 getRedirectResult(auth).catch(err => console.error(err));
 
 applyStaticTranslations();
+
+// Tell the user plainly when there is no connection, so an edit made on a plane
+// doesn't look like it failed to save.
+function updateConnectionNote() {
+  const note = document.getElementById('syncNote');
+  if (!note) return;
+  const online = navigator.onLine;
+  note.textContent = online ? t('syncNote') : t('offlineNote');
+  note.style.color = online ? '' : 'var(--red)';
+}
+window.addEventListener('online', updateConnectionNote);
+window.addEventListener('offline', updateConnectionNote);
+updateConnectionNote();
+
+// Keeps a copy of the page and the Firebase libraries on the device, so the app
+// opens with no signal. Network-first, so an update is still picked up online.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.error('service worker registration failed', err));
+  });
+}
 
 // If the app is left open past midnight, the banner and the "today's day is the
 // open one" default refresh themselves without a reload.
@@ -1401,10 +1583,8 @@ setInterval(() => {
   }
 }, 60000);
 
-userChip.addEventListener('click', async () => {
-  if (confirm(t('logoutConfirm'))) {
-    await signOut(auth);
-  }
+userChip.addEventListener('click', () => {
+  if (confirm(t('lockConfirm'))) window.lockDevice();
 });
 
 onAuthStateChanged(auth, (user) => {
@@ -1413,20 +1593,25 @@ onAuthStateChanged(auth, (user) => {
   if (unsubscribeDays) { unsubscribeDays(); unsubscribeDays = null; }
   if (unsubscribePacking) { unsubscribePacking(); unsubscribePacking = null; }
 
-  if (user) {
-    loginScreen.classList.add('hidden');
-    appScreen.classList.remove('hidden');
-    userChip.innerHTML = `<img src="${user.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(user.displayName ? user.displayName.split(' ')[0] : 'יציאה')}`;
-    listenToStores();
-    listenToDays();
-    listenToPacking();
-  } else {
-    appScreen.classList.add('hidden');
-    loginScreen.classList.remove('hidden');
-    stores = [];
-    days = [];
-    packing = [];
+  if (!user) {
+    // No session yet — get one silently. No screen, no password, nothing to do.
+    stores = []; days = []; packing = [];
+    signInAnonymously(auth).catch(err => {
+      console.error(err);
+      showError(!navigator.onLine ? t('offlineFirstRun')
+        : err.code === 'auth/operation-not-allowed' ? t('anonDisabled')
+        : t('signInFailed'));
+    });
+    return;
   }
+
+  userChip.innerHTML = `<span>${escapeHtml(t('lock'))}</span>`;
+  listenToStores();
+  listenToDays();
+  listenToPacking();
+
+  // The code is what decides whether the lists are shown on this device.
+  if (deviceUnlocked()) showApp(); else showLockScreen();
 });
 
 // Shared list: everyone who signs in reads/writes the same collection
@@ -1444,6 +1629,7 @@ function listenToStores() {
     render();
   }, (err) => {
     console.error(err);
+    showError(t('loadFailed'));
   });
 }
 
@@ -1456,6 +1642,7 @@ function listenToDays() {
     renderDays();
   }, (err) => {
     console.error(err);
+    showError(t('loadFailed'));
   });
 }
 
@@ -1468,6 +1655,7 @@ function listenToPacking() {
     renderPacking();
   }, (err) => {
     console.error(err);
+    showError(t('loadFailedPacking'));
   });
 }
 
@@ -1488,7 +1676,7 @@ async function addDay() {
     const yy = String(lastDate.getFullYear()).slice(2);
     label += ` - ${dd}/${mm}/${yy}`;
   }
-  await addDoc(daysRef, { label, activities: [], order: days.length, createdAt: serverTimestamp() });
+  await attempt(() => addDoc(daysRef, { label, activities: [], order: days.length, createdAt: serverTimestamp() }));
 }
 
 window.deleteDay = async function(dayId) {
@@ -1520,7 +1708,7 @@ window.addActivity = async function(dayId) {
   if (!currentUser) return;
   const day = days.find(d => d.id === dayId);
   const newActs = [...(day.activities || []), { id: cryptoRandomId(), time: '', title: '', image: '' }];
-  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+  await attempt(() => setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true }));
 };
 
 window.deleteActivity = async function(dayId, actId) {
@@ -1671,7 +1859,7 @@ async function addStore() {
   if (!name || !currentUser) return;
   newStoreInput.value = '';
   const storesRef = collection(db, ...SHARED_PATH);
-  await addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '', order: stores.length, clickCollect: false });
+  await attempt(() => addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '', order: stores.length, clickCollect: false }));
 }
 
 window.toggleClickCollect = async function(storeId) {
@@ -1713,7 +1901,7 @@ window.addItem = async function(storeId, inputEl) {
   inputEl.value = '';
   const store = stores.find(s => s.id === storeId);
   const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false, qty: 1, price: 0 }];
-  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+  await attempt(() => setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true }));
 };
 
 window.toggleItem = async function(storeId, itemId) {
@@ -1786,7 +1974,7 @@ async function addTopic() {
   if (!name || !currentUser) return;
   newTopicInput.value = '';
   const packingRef = collection(db, ...PACKING_PATH);
-  await addDoc(packingRef, { name, items: [], order: packing.length, createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' });
+  await attempt(() => addDoc(packingRef, { name, items: [], order: packing.length, createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' }));
 }
 
 window.deleteTopic = async function(topicId) {
@@ -1812,7 +2000,7 @@ window.addPackItem = async function(topicId, inputEl) {
   inputEl.value = '';
   const topic = packing.find(p => p.id === topicId);
   const newItems = [...(topic.items || []), { id: cryptoRandomId(), name, checked: false }];
-  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+  await attempt(() => setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true }));
 };
 
 window.togglePackItem = async function(topicId, itemId) {
