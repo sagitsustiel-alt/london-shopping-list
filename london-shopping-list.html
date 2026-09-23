@@ -317,6 +317,16 @@
     background:linear-gradient(180deg, #FFFDF9, var(--paper));
     gap:8px;
   }
+  /* today's day, so it is recognisable even when every card is closed */
+  .day-card.is-today{
+    border-color:var(--red);
+  }
+  .day-card.is-today .day-head{
+    background:#FBEAEA;
+  }
+  .day-card.is-today .day-label-input{
+    color:var(--red);
+  }
   .day-label-input{
     flex:1;
     border:none;
@@ -898,24 +908,25 @@
 </head>
 <body>
 
-  <!-- LOCK SCREEN -->
-  <div class="wrap login-screen" id="loginScreen">
+  <!-- FALLBACK SCREEN — only ever shown if the silent sign-in could not happen -->
+  <div class="wrap login-screen hidden" id="loginScreen">
     <div class="lang-toggle-row login-lang-toggle">
       <button class="lang-btn" id="langBtnHe" onclick="setLanguage('he')">עברית</button>
       <button class="lang-btn" id="langBtnEn" onclick="setLanguage('en')">English</button>
     </div>
     <div class="login-card">
       <div class="login-title" id="loginTitle">רשימת קניות - לונדון</div>
-      <div class="login-sub" id="loginSub">הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.</div>
-      <input class="code-input" id="codeInput" type="tel" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
-      <button class="google-btn" id="codeBtn"><span id="codeBtnText">כניסה</span></button>
-      <div class="login-error hidden" id="loginError">קוד שגוי. נסי שוב.</div>
-      <button class="google-fallback" id="loginBtn"><span id="loginBtnText">או להתחבר עם Google</span></button>
+      <div class="login-sub" id="loginSub">לא הצלחתי להתחבר לרשימות. אפשר להיכנס עם חשבון Google כדי להמשיך.</div>
+      <button class="google-btn" id="loginBtn">
+        <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20.4H24v7.2h11.3c-1.6 4.6-6 7.9-11.3 7.9-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l5.9 4.3C13.7 15.6 18.5 12.4 24 12.4c3.1 0 5.8 1.2 7.9 3.1l5.1-5.1C33.6 6.1 29.1 4 24 4c-7.4 0-13.8 4.2-17 10.3z"/><path fill="#4CAF50" d="M24 44c5 0 9.5-1.9 12.9-5.1l-6-4.9c-2 1.4-4.6 2.3-7 2.3-5.3 0-9.7-3.4-11.3-8.1l-6 4.6C9.9 39.6 16.4 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20.4H24v7.2h11.3c-.8 2.3-2.2 4.2-4.1 5.6l6 4.9C40.5 35.1 44 30.1 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+        <span id="loginBtnText">התחברות עם Google</span>
+      </button>
+      <div class="login-error hidden" id="loginError">ההתחברות נכשלה. נסי שוב.</div>
     </div>
   </div>
 
-  <!-- MAIN APP -->
-  <div class="wrap hidden" id="appScreen">
+  <!-- MAIN APP — visible from the start, no sign-in step -->
+  <div class="wrap" id="appScreen">
     <header>
       <div class="eyebrow-row">
         <div class="eyebrow-left">
@@ -1103,9 +1114,22 @@ function todayText() {
 
 // Pull a date out of a free-text day label like "יום 1 - 28/09/26".
 // Accepts 2- or 4-digit years and / . - separators. Returns null if there is none.
+// Typing Hebrew leaves invisible direction marks scattered through the text, and
+// they sit right between the digits often enough to break a naive match. Strip
+// anything invisible and normalise odd dashes/spaces before reading the date.
+function cleanLabel(label) {
+  return String(label || '')
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '')
+    .replace(/[\u00A0\u2007\u202F]/g, ' ')
+    .replace(/[\u2010-\u2015\u2212]/g, '-');
+}
+
 function parseLabelDate(label) {
-  if (!label) return null;
-  const m = String(label).match(/(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})/);
+  const text = cleanLabel(label);
+  if (!text) return null;
+  // No spaces allowed around the separators: with them, the dash in
+  // "יום 10 - 23/09/26" would be read as a date separator and give 10/23/2009.
+  const m = text.match(/(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})/);
   if (!m) return null;
   const day = parseInt(m[1], 10);
   const month = parseInt(m[2], 10);
@@ -1117,10 +1141,18 @@ function parseLabelDate(label) {
 }
 
 function labelIsToday(label) {
-  const d = parseLabelDate(label);
-  if (!d) return false;
   const now = new Date();
-  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  const d = parseLabelDate(label);
+  if (d) {
+    return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }
+  // Fall back to a day/month written without a year, e.g. "יום 3 - 23/9".
+  // Only / and . count here — a dash is far too often just a separator in the
+  // title itself.
+  const text = cleanLabel(label);
+  const partial = text.match(/(\d{1,2})[/.](\d{1,2})(?![/.\d])/);
+  if (!partial) return false;
+  return parseInt(partial[1], 10) === now.getDate() && parseInt(partial[2], 10) === now.getMonth() + 1;
 }
 
 // Which calendar day the "open today's card" default was last applied for, so it
@@ -1204,8 +1236,6 @@ let unsubscribePacking = null;
 const loginScreen = document.getElementById('loginScreen');
 const appScreen = document.getElementById('appScreen');
 const loginBtn = document.getElementById('loginBtn');
-const codeInput = document.getElementById('codeInput');
-const codeBtn = document.getElementById('codeBtn');
 const loginError = document.getElementById('loginError');
 const userChip = document.getElementById('userChip');
 const storesContainer = document.getElementById('storesContainer');
@@ -1244,12 +1274,10 @@ window.switchView = function(view) {
 const I18N = {
   he: {
     loginTitle: 'רשימת קניות - לונדון',
-    loginSub: 'הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.',
-    loginBtnText: 'או להתחבר עם Google',
-    loginError: 'קוד שגוי. נסי שוב.',
-    codeBtnText: 'כניסה',
-    lock: 'נעילה',
-    lockConfirm: 'לנעול את האפליקציה במכשיר הזה? תצטרכי להקליד את הקוד שוב.',
+    loginSub: 'לא הצלחתי להתחבר לרשימות. אפשר להיכנס עם חשבון Google כדי להמשיך.',
+    loginBtnText: 'התחברות עם Google',
+    loginError: 'ההתחברות נכשלה. נסי שוב.',
+    signOut: 'יציאה',
     signInFailed: 'ההתחברות נכשלה. נסי שוב.',
     anonDisabled: 'צריך להפעיל ב-Firebase את ההתחברות האנונימית (Authentication ← Sign-in method ← Anonymous).',
     offlineNote: 'אין חיבור — השינויים נשמרים במכשיר ויסתנכרנו לבד',
@@ -1302,12 +1330,10 @@ const I18N = {
   },
   en: {
     loginTitle: 'London Shopping List',
-    loginSub: 'Enter the access code. You only need to do this once on this device.',
-    loginBtnText: 'or sign in with Google',
-    loginError: 'Wrong code. Try again.',
-    codeBtnText: 'Enter',
-    lock: 'Lock',
-    lockConfirm: 'Lock the app on this device? You will need the code again.',
+    loginSub: 'Could not reach your lists. You can sign in with Google to continue.',
+    loginBtnText: 'Sign in with Google',
+    loginError: 'Sign-in failed. Please try again.',
+    signOut: 'Sign out',
     signInFailed: 'Sign-in failed. Please try again.',
     anonDisabled: 'Anonymous sign-in must be enabled in Firebase (Authentication > Sign-in method > Anonymous).',
     offlineNote: 'Offline — changes are saved on this device and will sync by themselves',
@@ -1468,7 +1494,6 @@ function applyStaticTranslations() {
   document.getElementById('loginTitle').textContent = dict.loginTitle;
   document.getElementById('loginSub').textContent = dict.loginSub;
   document.getElementById('loginBtnText').textContent = dict.loginBtnText;
-  document.getElementById('codeBtnText').textContent = dict.codeBtnText;
   loginError.textContent = dict.loginError;
   document.getElementById('eyebrowText').textContent = dict.eyebrow;
   tabShoppingBtn.textContent = dict.tabShopping;
@@ -1489,38 +1514,14 @@ function applyStaticTranslations() {
   ['langBtnEn', 'langBtnEnApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'en'));
 }
 
-/* ---------- Access code ----------
-   The app signs in to Firebase silently in the background; the code below is
-   only the door on this device. It is stored as a salted hash so the digits
-   are not sitting in plain sight in the page source. */
-const CODE_SALT = 'lists-london-v1:';
-const CODE_HASH = 'e3433f652a24d977f3caae7b8a738875c9de8acf0ef12c587413ed1c0dfa1ca9';
-const UNLOCK_KEY = 'lists_unlock';
+/* ---------- Getting in ----------
+   There is no sign-in step and no access code: the app signs itself in to
+   Firebase silently and opens straight onto the lists. The screen below is a
+   fallback that only appears if that silent sign-in could not happen at all. */
 
-async function hashCode(code) {
-  const bytes = new TextEncoder().encode(CODE_SALT + code);
-  const digest = await crypto.subtle.digest('SHA-256', bytes);
-  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function deviceUnlocked() {
-  try { return localStorage.getItem(UNLOCK_KEY) === CODE_HASH; } catch (e) { return false; }
-}
-
-function markUnlocked() {
-  try { localStorage.setItem(UNLOCK_KEY, CODE_HASH); } catch (e) {}
-}
-
-window.lockDevice = function() {
-  try { localStorage.removeItem(UNLOCK_KEY); } catch (e) {}
-  showLockScreen();
-};
-
-function showLockScreen() {
+function showFallbackScreen() {
   appScreen.classList.add('hidden');
   loginScreen.classList.remove('hidden');
-  codeInput.value = '';
-  loginError.classList.add('hidden');
 }
 
 function showApp() {
@@ -1528,37 +1529,11 @@ function showApp() {
   appScreen.classList.remove('hidden');
 }
 
-async function submitCode() {
-  const code = codeInput.value.trim();
-  if (code.length < 4) return;
-  const ok = (await hashCode(code)) === CODE_HASH;
-  if (!ok) {
-    loginError.classList.remove('hidden');
-    codeInput.value = '';
-    return;
-  }
-  markUnlocked();
-  loginError.classList.add('hidden');
-  showApp();
-  if (!currentUser) showStickyError(t('noSession'));
-}
-
-codeBtn.addEventListener('click', submitCode);
-codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
-codeInput.addEventListener('input', () => {
-  codeInput.value = codeInput.value.replace(/\D/g, '');
-  loginError.classList.add('hidden');
-  if (codeInput.value.length === 4) submitCode();
-});
-
-// Escape hatch: signing in with a Google account also opens the app, in case
-// anything ever goes wrong with the code flow mid-trip.
 loginBtn.addEventListener('click', async () => {
   loginError.classList.add('hidden');
   try {
     if (isStandalone) { await signInWithRedirect(auth, provider); return; }
     await signInWithPopup(auth, provider);
-    markUnlocked();
     showApp();
   } catch (err) {
     console.error(err);
@@ -1606,8 +1581,12 @@ setInterval(() => {
   }
 }, 60000);
 
-userChip.addEventListener('click', () => {
-  if (confirm(t('lockConfirm'))) window.lockDevice();
+// Only meaningful when someone signed in with a real Google account through the
+// fallback; with the silent anonymous session there is nothing to sign out of.
+userChip.addEventListener('click', async () => {
+  if (currentUser && !currentUser.isAnonymous && confirm(t('logoutConfirm'))) {
+    await signOut(auth);
+  }
 });
 
 onAuthStateChanged(auth, (user) => {
@@ -1621,6 +1600,7 @@ onAuthStateChanged(auth, (user) => {
     stores = []; days = []; packing = [];
     signInAnonymously(auth).catch(err => {
       console.error(err);
+      showFallbackScreen();
       showStickyError(!navigator.onLine ? t('offlineFirstRun')
         : err.code === 'auth/operation-not-allowed' ? t('anonDisabled')
         : t('signInFailed'));
@@ -1628,13 +1608,18 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  userChip.innerHTML = `<span>${escapeHtml(t('lock'))}</span>`;
+  // The chip only has a job for a named account; hide it for the silent session.
+  if (currentUser.isAnonymous) {
+    userChip.classList.add('hidden');
+  } else {
+    userChip.classList.remove('hidden');
+    userChip.innerHTML = `<img src="${currentUser.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(currentUser.displayName ? currentUser.displayName.split(' ')[0] : t('signOut'))}`;
+  }
+
   listenToStores();
   listenToDays();
   listenToPacking();
-
-  // The code is what decides whether the lists are shown on this device.
-  if (deviceUnlocked()) showApp(); else showLockScreen();
+  showApp();
 });
 
 // Shared list: everyone who signs in reads/writes the same collection
@@ -1834,8 +1819,9 @@ function renderDays() {
         `).join('') + '</ul>';
 
     const isCollapsed = !expandedDays.has(day.id);
+    const todayMark = labelIsToday(day.label) ? ' is-today' : '';
     return `
-      <div class="day-card" data-id="${day.id}">
+      <div class="day-card${todayMark}" data-id="${day.id}">
         <div class="day-head">
           <span class="drag-handle day-drag-handle">⠿</span>
           <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleDayCollapse('${day.id}')">${chevronSvg()}</button>
