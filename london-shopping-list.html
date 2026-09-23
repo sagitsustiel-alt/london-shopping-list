@@ -1167,8 +1167,9 @@ function applyTodayDefault() {
   if (expandedDaysInitializedFor === key) return;
   expandedDaysInitializedFor = key;
   expandedDays.clear();
-  const today = days.find(d => labelIsToday(d.label));
-  if (today) expandedDays.add(today.id);
+  // Every day carrying today's date opens — there can legitimately be more than
+  // one (a flight day and a plan for the same date, say).
+  days.filter(d => labelIsToday(d.label)).forEach(d => expandedDays.add(d.id));
 }
 
 function chevronSvg() {
