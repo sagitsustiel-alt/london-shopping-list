@@ -1,0 +1,2273 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="קניות לונדון">
+<!-- Freshness is handled by sw.js (network-first), which also makes the app work
+     with no connection at all. -->
+<!-- iOS ignores data: URIs for apple-touch-icon, so the home-screen icon has to
+     point at a real file sitting next to this page. The browser-tab favicon
+     below can stay embedded. -->
+<link rel="apple-touch-icon" href="image.png">
+<link rel="icon" href="data:image/png;base64,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">
+<title>רשימת קניות - לונדון</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;900&family=Heebo:wght@400;500;600;700&display=swap');
+
+  :root{
+    --navy:#14213D;
+    --navy-2:#1E2E52;
+    --red:#C8102E;
+    --cream:#F5F1E8;
+    --paper:#FBF8F2;
+    --gold:#B08D57;
+    --line:#DCD4C2;
+    --ink:#20242E;
+    --muted:#6B7180;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    font-family:'Heebo',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    padding:28px 16px 80px;
+  }
+
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+  }
+
+  /* Header */
+  header{
+    position:relative;
+    padding:22px 22px 26px;
+    background:var(--navy);
+    border-radius:4px;
+    margin-bottom:22px;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.035) 0 2px, transparent 2px 26px);
+    pointer-events:none;
+  }
+  header::after{
+    content:"";
+    position:absolute;
+    right:-30px;
+    top:-30px;
+    width:150px;
+    height:150px;
+    border-radius:50%;
+    border:14px solid var(--red);
+    opacity:0.9;
+  }
+  .eyebrow-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin-bottom:10px;
+    position:relative;
+    z-index:1;
+  }
+  .eyebrow-left{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .header-right{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .lang-toggle-row{
+    display:flex;
+    gap:4px;
+  }
+  .lang-btn{
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.2);
+    color:#C9CEDB;
+    border-radius:12px;
+    padding:3px 9px;
+    font-size:11px;
+    font-family:'Heebo',sans-serif;
+    cursor:pointer;
+  }
+  .lang-btn.active{
+    background:var(--paper);
+    color:var(--navy);
+    border-color:var(--paper);
+    font-weight:600;
+  }
+  .login-lang-toggle{
+    justify-content:center;
+    margin-bottom:18px;
+  }
+  .login-lang-toggle .lang-btn{
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .login-lang-toggle .lang-btn.active{
+    background:var(--navy);
+    color:var(--paper);
+    border-color:var(--navy);
+  }
+  .tube-dot{
+    width:10px;height:10px;border-radius:50%;background:var(--red);
+    flex-shrink:0;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:#C9CEDB;
+    letter-spacing:0.02em;
+  }
+  .user-chip{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:12.5px;
+    color:#C9CEDB;
+    cursor:pointer;
+    background:rgba(255,255,255,0.08);
+    padding:5px 10px 5px 6px;
+    border-radius:20px;
+    border:none;
+  }
+  .user-chip img{
+    width:20px;height:20px;border-radius:50%;
+  }
+  h1{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:900;
+    font-size:32px;
+    color:var(--paper);
+    margin:0 0 6px;
+    position:relative;
+    z-index:1;
+    line-height:1.15;
+  }
+  .sub{
+    color:#AEB4C4;
+    font-size:14.5px;
+    position:relative;
+    z-index:1;
+    max-width:320px;
+  }
+
+  /* Login screen */
+  .login-screen{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:60px 24px;
+    text-align:center;
+  }
+  .login-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:32px 26px;
+    max-width:360px;
+  }
+  .login-title{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:20px;
+    color:var(--navy);
+    margin-bottom:8px;
+  }
+  .login-sub{
+    color:var(--muted);
+    font-size:14px;
+    margin-bottom:24px;
+    line-height:1.5;
+  }
+  .google-btn{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    width:100%;
+    background:var(--navy);
+    color:var(--paper);
+    border:none;
+    border-radius:4px;
+    padding:13px 18px;
+    font-family:'Heebo',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .google-btn:hover{background:var(--navy-2);}
+  .google-btn svg{width:18px;height:18px;flex-shrink:0;}
+  .login-error{
+    color:var(--red);
+    font-size:14px;
+    margin-top:14px;
+  }
+  .code-input{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:4px;
+    padding:14px 12px;
+    margin-bottom:14px;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:30px;
+    letter-spacing:0.5em;
+    text-indent:0.5em;
+    text-align:center;
+    color:var(--navy);
+  }
+  .code-input:focus{outline:none; border-color:var(--gold);}
+  .google-fallback{
+    display:block;
+    width:100%;
+    margin-top:16px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-family:'Heebo',sans-serif;
+    font-size:13px;
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .google-fallback:hover{color:var(--navy);}
+
+  /* Sync status */
+  .sync-note{
+    text-align:center;
+    font-size:12px;
+    color:var(--muted);
+    margin-bottom:16px;
+  }
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .tab-btn{
+    flex:1;
+    background:var(--paper);
+    border:1px solid var(--line);
+    color:var(--muted);
+    border-radius:4px;
+    padding:10px 4px;
+    font-family:'Heebo',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .tab-btn.active{
+    background:var(--navy);
+    color:var(--paper);
+    border-color:var(--navy);
+  }
+
+  /* "Today is ..." banner at the top of the daily plan */
+  .today-banner{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    background:var(--navy);
+    color:var(--paper);
+    border-radius:4px;
+    padding:12px 16px;
+    margin-bottom:16px;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:16px;
+  }
+  .today-banner .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--red);
+    flex-shrink:0;
+  }
+
+  .day-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:4px;
+    overflow:hidden;
+  }
+  .day-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:6px 10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #FFFDF9, var(--paper));
+    gap:8px;
+  }
+  .day-label-input{
+    flex:1;
+    border:none;
+    background:transparent;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:19px;
+    color:var(--navy);
+    padding:2px 2px;
+  }
+  .day-label-input:focus{outline:none; border-bottom:1px solid var(--gold);}
+  .day-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    padding:2px 6px;
+    flex-shrink:0;
+  }
+  .day-del:hover{color:var(--red);}
+
+  .activities{
+    list-style:none;
+    margin:0;
+    padding:0 8px;
+  }
+  .activity-row{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:0 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .activity-row:last-child{border-bottom:none;}
+  .activity-time{
+    width:56px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:3px 3px;
+    font-family:'Heebo',sans-serif;
+    font-size:14px;
+    color:var(--ink);
+    text-align:center;
+  }
+  .activity-time:focus{outline:none; border-color:var(--gold);}
+  .activity-title{
+    flex:1;
+    min-width:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:4px 8px;
+    font-family:'Heebo',sans-serif;
+    font-size:16px;
+    color:var(--ink);
+  }
+  .activity-title:focus{outline:none; border-color:var(--gold);}
+  .activity-imgzone{
+    width:84px;
+    height:84px;
+    flex-shrink:0;
+    border:1.5px dashed var(--line);
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    overflow:hidden;
+    background:#fff;
+    position:relative;
+  }
+  .activity-imgzone.drag-over{
+    border-color:var(--red);
+    background:#FBEAEA;
+  }
+  .activity-imgzone img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+  .activity-imgzone .plus{
+    font-size:18px;
+    color:var(--muted);
+  }
+  .activity-imgzone input[type="file"]{
+    display:none;
+  }
+  .activity-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:15px;
+    cursor:pointer;
+    padding:2px 6px;
+    flex-shrink:0;
+  }
+  .activity-del:hover{color:var(--red);}
+  .add-activity-row{
+    padding:6px 12px 10px;
+  }
+  .add-activity-row button{
+    width:100%;
+    background:var(--paper);
+    border:1px solid var(--navy);
+    color:var(--navy);
+    border-radius:3px;
+    padding:8px;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .add-activity-row button:hover{background:var(--navy); color:var(--paper);}
+
+  /* Progress summary */
+  .summary{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:14px 18px;
+    margin-bottom:22px;
+  }
+  .summary .num{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:25px;
+    color:var(--navy);
+  }
+  .summary .lbl{
+    font-size:14px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .summary-bar{
+    flex:1;
+    height:6px;
+    background:var(--line);
+    border-radius:3px;
+    margin:0 18px;
+    overflow:hidden;
+  }
+  .summary-bar-fill{
+    height:100%;
+    background:var(--red);
+    border-radius:3px;
+    transition:width 0.35s ease;
+  }
+
+  /* Add store */
+  .add-store{
+    display:flex;
+    gap:8px;
+    margin-bottom:24px;
+  }
+  .add-store input{
+    flex:1;
+    border:1px solid var(--line);
+    background:var(--paper);
+    border-radius:4px;
+    padding:12px 14px;
+    font-family:'Heebo',sans-serif;
+    font-size:16.5px;
+    color:var(--ink);
+  }
+  .add-store input:focus{
+    outline:none;
+    border-color:var(--navy);
+  }
+  .add-store button{
+    background:var(--navy);
+    color:var(--paper);
+    border:none;
+    border-radius:4px;
+    padding:0 20px;
+    font-family:'Heebo',sans-serif;
+    font-size:14.5px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.15s ease;
+  }
+  .add-store button:hover{background:var(--navy-2);}
+  .add-store button:disabled{opacity:0.5; cursor:default;}
+  /* "Add day" sits alone in its row, so it needs its own vertical padding */
+  #addDayBtn{padding:12px 22px;}
+
+  /* Store card */
+  .store{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:4px;
+    overflow:hidden;
+  }
+  .store-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:6px 10px;
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg, #FFFDF9, var(--paper));
+  }
+  .store-title-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .store-mark{
+    width:6px;
+    height:22px;
+    background:var(--red);
+    border-radius:2px;
+    flex-shrink:0;
+  }
+  .store-name{
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:21px;
+    color:var(--navy);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    border:none;
+    background:transparent;
+    padding:2px 0;
+    min-width:0;
+    flex:1;
+  }
+  .store-name:focus{outline:none; border-bottom:1px solid var(--gold);}
+  .store-count{
+    font-size:14px;
+    color:var(--muted);
+    flex-shrink:0;
+    margin-inline-start:10px;
+  }
+  .store-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    cursor:pointer;
+    padding:2px 6px;
+    line-height:1;
+    flex-shrink:0;
+  }
+  .store-del:hover{color:var(--red);}
+
+  .cc-badge{
+    display:flex;
+    align-items:center;
+    gap:4px;
+    flex-shrink:0;
+    font-size:11px;
+    font-weight:700;
+    color:var(--muted);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:3px 8px;
+    cursor:pointer;
+    user-select:none;
+    background:#fff;
+  }
+  .cc-badge.active{
+    color:#fff;
+    background:var(--red);
+    border-color:var(--red);
+  }
+
+  .drag-handle{
+    flex-shrink:0;
+    cursor:grab;
+    color:var(--muted);
+    touch-action:none;
+    padding:2px 4px;
+    font-size:14px;
+    line-height:1;
+    letter-spacing:-1px;
+  }
+  .drag-handle:active{cursor:grabbing;}
+  .store.dragging, .item.dragging, .day-card.dragging{
+    opacity:0.5;
+  }
+
+  .collapse-btn{
+    background:none;
+    border:none;
+    color:var(--muted);
+    cursor:pointer;
+    padding:2px 4px;
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .collapse-btn svg{
+    width:16px;
+    height:16px;
+    transition:transform 0.15s ease;
+  }
+  .collapse-btn.collapsed svg{
+    transform:rotate(-90deg);
+  }
+  .collapse-btn:hover{color:var(--navy);}
+
+  .items{
+    list-style:none;
+    margin:0;
+    padding:0 8px;
+  }
+  .item{
+    display:flex;
+    flex-direction:column;
+    padding:0 6px;
+    border-radius:3px;
+  }
+  .item:hover{background:#F1EBDD;}
+
+  .item-top{
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+
+  /* The numbers are secondary: keep them compact and quiet so the item name
+     gets as much room as possible. */
+  .qty-input{
+    width:34px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:0 2px;
+    font-family:'Heebo',sans-serif;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+  .qty-input:focus{outline:none; border-color:var(--gold); color:var(--ink);}
+
+  .price-input{
+    width:54px;
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:0 2px;
+    font-family:'Heebo',sans-serif;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+  .price-input:focus{outline:none; border-color:var(--gold); color:var(--ink);}
+
+  .row-total{
+    flex-shrink:0;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    font-size:13px;
+    color:var(--navy);
+    min-width:38px;
+    text-align:center;
+  }
+
+  .store-total{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:10px 16px;
+    border-top:1px solid var(--line);
+    background:#F6F1E4;
+    font-size:15px;
+  }
+  .store-total .label{
+    color:var(--muted);
+  }
+  .store-total .amounts{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    font-family:'Frank Ruhl Libre', serif;
+    font-weight:700;
+    color:var(--navy);
+  }
+  .store-total .amounts .gbp{
+    padding-inline-end:14px;
+    border-inline-end:1px solid var(--line);
+  }
+  .store-total .amounts .ils{
+    color:var(--red);
+    font-size:12.5px;
+    font-weight:600;
+  }
+
+  .checkbox{
+    width:20px;
+    height:20px;
+    border-radius:50%;
+    border:2px solid var(--navy);
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    background:var(--paper);
+    transition:background 0.15s ease, border-color 0.15s ease;
+  }
+  .checkbox.checked{
+    background:var(--red);
+    border-color:var(--red);
+  }
+  .checkbox svg{
+    width:12px;
+    height:12px;
+    opacity:0;
+    transform:scale(0.6);
+    transition:opacity 0.12s ease, transform 0.12s ease;
+  }
+  .checkbox.checked svg{opacity:1; transform:scale(1);}
+
+  .item-name{
+    flex:1;
+    font-size:18px;
+    color:var(--ink);
+    min-width:0;
+    border:none;
+    background:transparent;
+    font-family:'Heebo',sans-serif;
+    padding:0;
+    line-height:1.05;
+  }
+  .item-name:focus{outline:none; border-bottom:1px solid var(--gold);}
+  .item.checked .item-name{
+    color:var(--muted);
+    text-decoration:line-through;
+    text-decoration-color:var(--red);
+  }
+  .item-del{
+    background:none;
+    border:none;
+    color:var(--muted);
+    opacity:0;
+    font-size:16px;
+    line-height:1;
+    cursor:pointer;
+    padding:0 6px;
+    flex-shrink:0;
+    transition:opacity 0.12s ease;
+  }
+  .item:hover .item-del{opacity:1;}
+  .item-del:hover{color:var(--red);}
+
+  .add-item{
+    display:flex;
+    gap:8px;
+    padding:6px 12px 10px;
+  }
+  .add-item input{
+    flex:1;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:8px 12px;
+    font-family:'Heebo',sans-serif;
+    font-size:16px;
+    color:var(--ink);
+  }
+  .add-item input:focus{outline:none; border-color:var(--gold);}
+  .add-item button{
+    background:var(--paper);
+    border:1px solid var(--navy);
+    color:var(--navy);
+    border-radius:3px;
+    padding:0 16px;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .add-item button:hover{background:var(--navy); color:var(--paper);}
+
+  .empty-store{
+    padding:18px 16px;
+    text-align:center;
+    color:var(--muted);
+    font-size:15px;
+  }
+
+  .purchased-divider{
+    padding:6px 16px 2px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--muted);
+    border-top:1px solid var(--line);
+    margin-top:2px;
+  }
+  .purchased-list{
+    opacity:0.85;
+  }
+
+  .empty-state{
+    text-align:center;
+    padding:50px 20px;
+    color:var(--muted);
+  }
+  .empty-state .big{
+    font-family:'Frank Ruhl Libre', serif;
+    font-size:20px;
+    color:var(--navy);
+    margin-bottom:6px;
+  }
+
+  /* Undo bar — appears after every delete */
+  .undo-toast{
+    position:fixed;
+    bottom:20px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:var(--navy);
+    color:var(--paper);
+    border-radius:6px;
+    padding:11px 14px 11px 16px;
+    box-shadow:0 6px 22px rgba(0,0,0,0.28);
+    z-index:60;
+    max-width:calc(100% - 32px);
+    font-family:'Heebo',sans-serif;
+    font-size:15px;
+    animation:undo-in 0.18s ease-out;
+  }
+  @keyframes undo-in{
+    from{opacity:0; transform:translateX(-50%) translateY(10px);}
+    to{opacity:1; transform:translateX(-50%) translateY(0);}
+  }
+  .undo-toast .msg{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    min-width:0;
+  }
+  .undo-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    flex-shrink:0;
+    background:var(--red);
+    color:#fff;
+    border:none;
+    border-radius:4px;
+    padding:7px 12px;
+    font-family:'Heebo',sans-serif;
+    font-size:13.5px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .undo-toast.error{
+    background:var(--red);
+  }
+  .undo-toast.error .msg{
+    white-space:normal;
+    line-height:1.4;
+  }
+  .undo-btn svg{
+    width:16px;
+    height:16px;
+    transition:transform 0.4s ease;
+  }
+  .undo-btn:hover svg, .undo-btn:active svg{
+    transform:rotate(-300deg);
+  }
+
+  .hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+  <!-- LOCK SCREEN -->
+  <div class="wrap login-screen" id="loginScreen">
+    <div class="lang-toggle-row login-lang-toggle">
+      <button class="lang-btn" id="langBtnHe" onclick="setLanguage('he')">עברית</button>
+      <button class="lang-btn" id="langBtnEn" onclick="setLanguage('en')">English</button>
+    </div>
+    <div class="login-card">
+      <div class="login-title" id="loginTitle">רשימת קניות - לונדון</div>
+      <div class="login-sub" id="loginSub">הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.</div>
+      <input class="code-input" id="codeInput" type="tel" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="••••">
+      <button class="google-btn" id="codeBtn"><span id="codeBtnText">כניסה</span></button>
+      <div class="login-error hidden" id="loginError">קוד שגוי. נסי שוב.</div>
+      <button class="google-fallback" id="loginBtn"><span id="loginBtnText">או להתחבר עם Google</span></button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="wrap hidden" id="appScreen">
+    <header>
+      <div class="eyebrow-row">
+        <div class="eyebrow-left">
+          <div class="tube-dot"></div>
+          <div class="eyebrow" id="eyebrowText">טיול ללונדון</div>
+        </div>
+        <div class="header-right">
+          <div class="lang-toggle-row">
+            <button class="lang-btn" id="langBtnHeApp" onclick="setLanguage('he')">עברית</button>
+            <button class="lang-btn" id="langBtnEnApp" onclick="setLanguage('en')">English</button>
+          </div>
+          <button class="user-chip" id="userChip"></button>
+        </div>
+      </div>
+      <h1>LISTS</h1>
+    </header>
+
+    <div class="tabs">
+      <button class="tab-btn active" id="tabShoppingBtn" onclick="switchView('shopping')">רשימת קניות</button>
+      <button class="tab-btn" id="tabItineraryBtn" onclick="switchView('itinerary')">תוכנית יומית</button>
+      <button class="tab-btn" id="tabPackingBtn" onclick="switchView('packing')">רשימת אריזה</button>
+    </div>
+
+    <div class="sync-note" id="syncNote">שומר אוטומטית לחשבון שלך</div>
+
+    <div id="shoppingView">
+      <div class="summary">
+        <div>
+          <div class="num" id="summaryNum">0 / 0</div>
+          <div class="lbl" id="summaryLbl">פריטים נקנו</div>
+        </div>
+        <div class="summary-bar"><div class="summary-bar-fill" id="summaryBar" style="width:0%"></div></div>
+        <div class="lbl" id="summaryPct">0%</div>
+      </div>
+
+      <div class="add-store">
+        <input type="text" id="newStoreInput" placeholder="שם חנות חדשה, למשל Harrods">
+        <button id="addStoreBtn">הוסף חנות</button>
+      </div>
+
+      <div id="storesContainer"></div>
+    </div>
+
+    <div id="itineraryView" class="hidden">
+      <div class="today-banner" id="todayBanner"></div>
+      <div class="add-store">
+        <button id="addDayBtn">+ הוסף יום</button>
+      </div>
+      <div id="daysContainer"></div>
+    </div>
+
+    <div id="packingView" class="hidden">
+      <div class="summary">
+        <div>
+          <div class="num" id="packSummaryNum">0 / 0</div>
+          <div class="lbl" id="packSummaryLbl">פריטים נארזו</div>
+        </div>
+        <div class="summary-bar"><div class="summary-bar-fill" id="packSummaryBar" style="width:0%"></div></div>
+        <div class="lbl" id="packSummaryPct">0%</div>
+      </div>
+
+      <div class="add-store">
+        <input type="text" id="newTopicInput" placeholder="נושא חדש, למשל אמבטיה">
+        <button id="addTopicBtn">הוסף נושא</button>
+      </div>
+
+      <div id="packingContainer"></div>
+    </div>
+  </div>
+
+  <!-- UNDO BAR -->
+  <div class="undo-toast hidden" id="undoToast">
+    <span class="msg" id="undoMsg"></span>
+    <button class="undo-btn" id="undoBtn">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 14L4 9l5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 9h10a6 6 0 0 1 0 12h-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span id="undoBtnText">בטל</span>
+    </button>
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect,
+  getRedirectResult, onAuthStateChanged, signOut, signInAnonymously,
+  setPersistence, indexedDBLocalPersistence, browserLocalPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {
+  getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+  collection, doc, setDoc, onSnapshot,
+  deleteDoc, addDoc, serverTimestamp, query, orderBy, writeBatch
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBXSywtG6nAosUSK8614LVCSdzVVQq7O-o",
+  authDomain: "london-shopping-list.firebaseapp.com",
+  projectId: "london-shopping-list",
+  storageBucket: "london-shopping-list.firebasestorage.app",
+  messagingSenderId: "1082293525814",
+  appId: "1:1082293525814:web:59563d356a225872922797",
+  measurementId: "G-M8R1GQ747Z"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Keep a full local copy of the lists on the device. This is what lets the app
+// open, read and edit with no connection at all (on a plane, or with roaming
+// off); everything written offline syncs by itself once there is signal again.
+let db;
+try {
+  db = initializeFirestore(app, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+  });
+} catch (err) {
+  console.error('offline cache unavailable, falling back', err);
+  db = getFirestore(app);
+}
+const provider = new GoogleAuthProvider();
+
+// Hold the sign-in on this device for as long as the browser allows, so closing
+// the app doesn't sign you out. (iOS can still clear it after a long gap.)
+setPersistence(auth, indexedDBLocalPersistence)
+  .catch(() => setPersistence(auth, browserLocalPersistence))
+  .catch(err => console.error(err));
+
+// Launched from the iPhone home screen there is no popup to open, so go
+// straight to the redirect flow instead of failing a popup first.
+const isStandalone = window.navigator.standalone === true ||
+  (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+
+let currentUser = null;
+let stores = [];
+let days = [];
+let packing = [];
+let unsubscribeStores = null;
+
+// Everything starts CLOSED. These sets hold what the user has explicitly opened,
+// so an empty set means "all collapsed" (the default on every page).
+const expandedStores = new Set();
+const expandedDays = new Set();
+const expandedTopics = new Set();
+
+// Set to true while a drag is in progress, so an incoming Firestore snapshot
+// doesn't re-render (and destroy) the element under the user's finger.
+let isDragging = false;
+
+window.toggleStoreCollapse = function(storeId) {
+  if (expandedStores.has(storeId)) expandedStores.delete(storeId);
+  else expandedStores.add(storeId);
+  render();
+};
+
+window.toggleDayCollapse = function(dayId) {
+  if (expandedDays.has(dayId)) expandedDays.delete(dayId);
+  else expandedDays.add(dayId);
+  renderDays();
+};
+
+window.toggleTopicCollapse = function(topicId) {
+  if (expandedTopics.has(topicId)) expandedTopics.delete(topicId);
+  else expandedTopics.add(topicId);
+  renderPacking();
+};
+
+/* ---------- Today's date ---------- */
+
+const DAY_NAMES = {
+  he: ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'],
+  en: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+};
+
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function todayText() {
+  const d = new Date();
+  const date = `${d.getDate()}/${d.getMonth() + 1}/${d.getFullYear()}`;
+  const dayName = DAY_NAMES[currentLang][d.getDay()];
+  return currentLang === 'he'
+    ? `היום ${date} · יום ${dayName}`
+    : `Today ${date} · ${dayName}`;
+}
+
+// Pull a date out of a free-text day label like "יום 1 - 28/09/26".
+// Accepts 2- or 4-digit years and / . - separators. Returns null if there is none.
+function parseLabelDate(label) {
+  if (!label) return null;
+  const m = String(label).match(/(\d{1,2})[/.\-](\d{1,2})[/.\-](\d{2,4})/);
+  if (!m) return null;
+  const day = parseInt(m[1], 10);
+  const month = parseInt(m[2], 10);
+  let year = parseInt(m[3], 10);
+  if (year < 100) year += 2000;
+  const d = new Date(year, month - 1, day);
+  if (isNaN(d.getTime()) || d.getDate() !== day || d.getMonth() !== month - 1) return null;
+  return d;
+}
+
+function labelIsToday(label) {
+  const d = parseLabelDate(label);
+  if (!d) return false;
+  const now = new Date();
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+// Which calendar day the "open today's card" default was last applied for, so it
+// re-applies by itself when the date rolls over while the page stays open.
+let expandedDaysInitializedFor = null;
+
+function applyTodayDefault() {
+  // Nothing loaded yet — don't burn the once-per-day initialisation on an empty
+  // list, or the real days would arrive with nothing opened.
+  if (days.length === 0) return;
+  const key = todayKey();
+  if (expandedDaysInitializedFor === key) return;
+  expandedDaysInitializedFor = key;
+  expandedDays.clear();
+  const today = days.find(d => labelIsToday(d.label));
+  if (today) expandedDays.add(today.id);
+}
+
+function chevronSvg() {
+  return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+// Generic pointer-based drag-to-reorder: works with mouse AND touch (iPhone Safari included).
+// rootEl: an ancestor element to delegate pointerdown from (doesn't need to change across renders).
+// itemSelector / handleSelector: CSS classes (no dot) for the draggable row and its grab handle.
+// onDrop(newIdOrder, container) fires once the user releases, with the new sibling order (by
+// data-id) and the actual parent element the drag happened within (so callers can find context,
+// e.g. which store a reordered item belongs to).
+function enableDragReorder(rootEl, itemSelector, handleSelector, onDrop) {
+  rootEl.addEventListener('pointerdown', (e) => {
+    const handle = e.target.closest('.' + handleSelector);
+    if (!handle) return;
+    const dragEl = handle.closest('.' + itemSelector);
+    if (!dragEl) return;
+    const container = dragEl.parentElement;
+    if (!container) return;
+    e.preventDefault();
+    dragEl.classList.add('dragging');
+    isDragging = true;
+
+    // The move/up listeners live on `document`, NOT on the handle. Earlier this
+    // relied on pointer capture staying attached to the handle, but moving the
+    // row with insertBefore() detaches and re-attaches it, which drops the
+    // capture and killed the drag after the first step. Listening on the
+    // document survives all of that.
+    const onMove = (ev) => {
+      ev.preventDefault();
+      const y = ev.clientY;
+      const items = [...container.querySelectorAll(':scope > .' + itemSelector)].filter(el => el !== dragEl);
+      for (const sib of items) {
+        const rect = sib.getBoundingClientRect();
+        const mid = rect.top + rect.height / 2;
+        const dragIsAfter = !!(dragEl.compareDocumentPosition(sib) & Node.DOCUMENT_POSITION_PRECEDING);
+        if (y < mid && dragIsAfter) {
+          container.insertBefore(dragEl, sib);
+          break;
+        } else if (y > mid && !dragIsAfter) {
+          container.insertBefore(dragEl, sib.nextSibling);
+          break;
+        }
+      }
+    };
+    const onUp = () => {
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+      document.removeEventListener('pointercancel', onUp);
+      dragEl.classList.remove('dragging');
+      isDragging = false;
+      const newOrder = [...container.querySelectorAll(':scope > .' + itemSelector)].map(el => el.dataset.id);
+      onDrop(newOrder, container);
+    };
+    document.addEventListener('pointermove', onMove, { passive: false });
+    document.addEventListener('pointerup', onUp);
+    document.addEventListener('pointercancel', onUp);
+  });
+}
+
+let unsubscribeDays = null;
+let unsubscribePacking = null;
+
+const loginScreen = document.getElementById('loginScreen');
+const appScreen = document.getElementById('appScreen');
+const loginBtn = document.getElementById('loginBtn');
+const codeInput = document.getElementById('codeInput');
+const codeBtn = document.getElementById('codeBtn');
+const loginError = document.getElementById('loginError');
+const userChip = document.getElementById('userChip');
+const storesContainer = document.getElementById('storesContainer');
+const newStoreInput = document.getElementById('newStoreInput');
+const addStoreBtn = document.getElementById('addStoreBtn');
+const shoppingView = document.getElementById('shoppingView');
+const itineraryView = document.getElementById('itineraryView');
+const tabShoppingBtn = document.getElementById('tabShoppingBtn');
+const tabItineraryBtn = document.getElementById('tabItineraryBtn');
+const daysContainer = document.getElementById('daysContainer');
+const addDayBtn = document.getElementById('addDayBtn');
+const packingView = document.getElementById('packingView');
+const tabPackingBtn = document.getElementById('tabPackingBtn');
+const packingContainer = document.getElementById('packingContainer');
+const newTopicInput = document.getElementById('newTopicInput');
+const addTopicBtn = document.getElementById('addTopicBtn');
+const todayBanner = document.getElementById('todayBanner');
+const undoToast = document.getElementById('undoToast');
+const undoMsg = document.getElementById('undoMsg');
+const undoBtn = document.getElementById('undoBtn');
+
+window.switchView = function(view) {
+  const views = {
+    shopping: [shoppingView, tabShoppingBtn],
+    itinerary: [itineraryView, tabItineraryBtn],
+    packing: [packingView, tabPackingBtn]
+  };
+  Object.keys(views).forEach(key => {
+    const [viewEl, tabEl] = views[key];
+    viewEl.classList.toggle('hidden', key !== view);
+    tabEl.classList.toggle('active', key === view);
+  });
+};
+
+// ---- Language / i18n ----
+const I18N = {
+  he: {
+    loginTitle: 'רשימת קניות - לונדון',
+    loginSub: 'הקלידי את קוד הגישה. במכשיר הזה תצטרכי לעשות את זה רק פעם אחת.',
+    loginBtnText: 'או להתחבר עם Google',
+    loginError: 'קוד שגוי. נסי שוב.',
+    codeBtnText: 'כניסה',
+    lock: 'נעילה',
+    lockConfirm: 'לנעול את האפליקציה במכשיר הזה? תצטרכי להקליד את הקוד שוב.',
+    signInFailed: 'ההתחברות נכשלה. נסי שוב.',
+    anonDisabled: 'צריך להפעיל ב-Firebase את ההתחברות האנונימית (Authentication ← Sign-in method ← Anonymous).',
+    offlineNote: 'אין חיבור — השינויים נשמרים במכשיר ויסתנכרנו לבד',
+    offlineFirstRun: 'אין חיבור, וזו הפעם הראשונה במכשיר הזה. צריך לפתוח פעם אחת עם אינטרנט.',
+    noSession: 'אין חיבור למסד הנתונים, ולכן שום דבר לא נשמר. צריך להפעיל Anonymous ב-Firebase (Authentication ← Sign-in method).',
+    eyebrow: 'טיול ללונדון',
+    tabShopping: 'רשימת קניות',
+    tabItinerary: 'תוכנית יומית',
+    syncNote: 'שומר אוטומטית לחשבון שלך',
+    summaryLbl: 'פריטים נקנו',
+    newStorePh: 'שם חנות חדשה, למשל Harrods',
+    addStoreBtn: 'הוסף חנות',
+    addDayBtn: '+ הוסף יום',
+    emptyStores: 'עוד אין חנויות ברשימה',
+    emptyStoresSub: 'הוסיפו חנות ראשונה למעלה כדי להתחיל',
+    emptyStore: 'אין עדיין פריטים בחנות הזו',
+    allBought: 'כל הפריטים נקנו 🎉',
+    purchased: 'נקנו',
+    total: 'סה"כ',
+    addItemPh: 'פריט חדש...',
+    addItemBtn: 'הוסף',
+    emptyDays: 'עוד אין ימים בתוכנית',
+    emptyDaysSub: 'הוסיפו יום ראשון למעלה כדי להתחיל',
+    emptyActivities: 'עוד אין פעילויות ליום הזה',
+    addActivityBtn: '+ הוסף פעילות',
+    timePh: 'שעה',
+    activityPh: 'פעילות...',
+    dayLabel: (n) => `יום ${n}`,
+    logoutConfirm: 'להתנתק מהחשבון?',
+    tabPacking: 'רשימת אריזה',
+    packSummaryLbl: 'פריטים נארזו',
+    newTopicPh: 'נושא חדש, למשל אמבטיה',
+    addTopicBtn: 'הוסף נושא',
+    emptyTopics: 'עוד אין נושאים ברשימת האריזה',
+    emptyTopicsSub: 'הוסיפו נושא ראשון למעלה, למשל אמבטיה, אוכל או ויזה',
+    emptyTopic: 'אין עדיין פריטים בנושא הזה',
+    allPacked: 'הכל נארז 🎉',
+    packed: 'נארזו',
+    confirmDeleteStore: (name) => `למחוק את החנות "${name}" וכל הפריטים שבה?`,
+    confirmDeleteItem: (name) => `למחוק את הפריט "${name}"?`,
+    confirmDeleteDay: (name) => `למחוק את "${name}" וכל הפעילויות שבו?`,
+    confirmDeleteActivity: (name) => `למחוק את הפעילות "${name}"?`,
+    confirmDeleteTopic: (name) => `למחוק את הנושא "${name}" וכל הפריטים שבו?`,
+    thisActivity: 'הזו',
+    deletedMsg: (name) => name ? `נמחק: "${name}"` : 'נמחק',
+    undo: 'בטל',
+    saveFailed: 'השמירה נכשלה. ייתכן שאין הרשאת כתיבה לרשימה הזו בהגדרות Firebase.',
+    loadFailed: 'לא הצלחתי לטעון את הנתונים. בדקי את החיבור לאינטרנט.',
+    loadFailedPacking: 'רשימת האריזה לא נטענת — כללי ההרשאות ב-Firebase כנראה לא מכסים אותה.'
+  },
+  en: {
+    loginTitle: 'London Shopping List',
+    loginSub: 'Enter the access code. You only need to do this once on this device.',
+    loginBtnText: 'or sign in with Google',
+    loginError: 'Wrong code. Try again.',
+    codeBtnText: 'Enter',
+    lock: 'Lock',
+    lockConfirm: 'Lock the app on this device? You will need the code again.',
+    signInFailed: 'Sign-in failed. Please try again.',
+    anonDisabled: 'Anonymous sign-in must be enabled in Firebase (Authentication > Sign-in method > Anonymous).',
+    offlineNote: 'Offline — changes are saved on this device and will sync by themselves',
+    offlineFirstRun: 'No connection, and this is the first run on this device. Open it once with internet.',
+    noSession: 'Not connected to the database, so nothing is being saved. Enable Anonymous in Firebase (Authentication > Sign-in method).',
+    eyebrow: 'London Trip',
+    tabShopping: 'Shopping List',
+    tabItinerary: 'Daily Plan',
+    syncNote: 'Auto-saved to your account',
+    summaryLbl: 'items bought',
+    newStorePh: 'New store name, e.g. Harrods',
+    addStoreBtn: 'Add store',
+    addDayBtn: '+ Add day',
+    emptyStores: 'No stores in the list yet',
+    emptyStoresSub: 'Add your first store above to get started',
+    emptyStore: 'No items in this store yet',
+    allBought: 'All items bought 🎉',
+    purchased: 'Bought',
+    total: 'Total',
+    addItemPh: 'New item...',
+    addItemBtn: 'Add',
+    emptyDays: 'No days in the plan yet',
+    emptyDaysSub: 'Add your first day above to get started',
+    emptyActivities: 'No activities for this day yet',
+    addActivityBtn: '+ Add activity',
+    timePh: 'Time',
+    activityPh: 'Activity...',
+    dayLabel: (n) => `Day ${n}`,
+    logoutConfirm: 'Sign out of your account?',
+    tabPacking: 'Packing List',
+    packSummaryLbl: 'items packed',
+    newTopicPh: 'New topic, e.g. Bathroom',
+    addTopicBtn: 'Add topic',
+    emptyTopics: 'No topics in the packing list yet',
+    emptyTopicsSub: 'Add your first topic above, e.g. Bathroom, Food or Visa',
+    emptyTopic: 'No items in this topic yet',
+    allPacked: 'Everything packed 🎉',
+    packed: 'Packed',
+    confirmDeleteStore: (name) => `Delete the store "${name}" and all its items?`,
+    confirmDeleteItem: (name) => `Delete the item "${name}"?`,
+    confirmDeleteDay: (name) => `Delete "${name}" and all its activities?`,
+    confirmDeleteActivity: (name) => `Delete the activity "${name}"?`,
+    confirmDeleteTopic: (name) => `Delete the topic "${name}" and all its items?`,
+    thisActivity: 'this one',
+    deletedMsg: (name) => name ? `Deleted: "${name}"` : 'Deleted',
+    undo: 'Undo',
+    saveFailed: 'Save failed. Firebase may not allow writing to this list.',
+    loadFailed: 'Could not load the data. Check your connection.',
+    loadFailedPacking: 'The packing list will not load — the Firebase rules probably do not cover it.'
+  }
+};
+
+let currentLang = localStorage.getItem('lang') || 'he';
+
+function t(key) {
+  return I18N[currentLang][key];
+}
+
+window.setLanguage = function(lang) {
+  currentLang = lang;
+  localStorage.setItem('lang', lang);
+  applyStaticTranslations();
+  render();
+  renderDays();
+  renderPacking();
+};
+
+function renderTodayBanner() {
+  todayBanner.innerHTML = `<span class="dot"></span><span>${escapeHtml(todayText())}</span>`;
+}
+
+/* ---------- Undo ---------- */
+// Every delete hands us a function that puts the thing back. We show the undo
+// bar for a few seconds; if it isn't used, the deletion just stands.
+let pendingUndo = null;
+let undoTimer = null;
+const UNDO_SECONDS = 12;
+
+function offerUndo(name, undoFn) {
+  pendingUndo = undoFn;
+  undoMsg.textContent = t('deletedMsg')(name);
+  undoBtn.classList.remove('hidden');
+  undoToast.classList.remove('error', 'hidden');
+  clearTimeout(undoTimer);
+  undoTimer = setTimeout(hideUndo, UNDO_SECONDS * 1000);
+}
+
+function hideUndo() {
+  clearTimeout(undoTimer);
+  pendingUndo = null;
+  undoToast.classList.add('hidden');
+}
+
+// Surface a failed read/write instead of letting it fail silently — a denied
+// Firestore rule used to look exactly like "the button does nothing".
+function showError(text) {
+  clearTimeout(undoTimer);
+  pendingUndo = null;
+  undoMsg.textContent = text;
+  undoBtn.classList.add('hidden');
+  undoToast.classList.add('error');
+  undoToast.classList.remove('hidden');
+  undoTimer = setTimeout(hideUndo, 9000);
+}
+
+// Some problems must not fade away after a few seconds — with no database
+// session the whole app is inert, and the user needs to keep seeing why.
+function showStickyError(text) {
+  clearTimeout(undoTimer);
+  pendingUndo = null;
+  undoMsg.textContent = text;
+  undoBtn.classList.add('hidden');
+  undoToast.classList.add('error');
+  undoToast.classList.remove('hidden');
+}
+
+// Every write goes through this first. Without a session the writes used to
+// return silently, which looked exactly like a dead button.
+function requireSession() {
+  if (currentUser) return true;
+  showStickyError(t('noSession'));
+  return false;
+}
+
+async function attempt(fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error(err);
+    showError(t('saveFailed'));
+  }
+}
+
+undoBtn.addEventListener('click', async () => {
+  const fn = pendingUndo;
+  hideUndo();
+  if (!fn) return;
+  try {
+    await fn();
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+// Restore a deleted array entry at the position it used to occupy, working off
+// whatever the list looks like right now rather than a stale copy of it.
+function restoreIntoArray(currentItems, item, index) {
+  const arr = [...(currentItems || [])];
+  arr.splice(Math.min(index < 0 ? arr.length : index, arr.length), 0, item);
+  return arr;
+}
+
+function applyStaticTranslations() {
+  const dict = I18N[currentLang];
+  document.documentElement.lang = currentLang;
+  document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
+
+  document.getElementById('loginTitle').textContent = dict.loginTitle;
+  document.getElementById('loginSub').textContent = dict.loginSub;
+  document.getElementById('loginBtnText').textContent = dict.loginBtnText;
+  document.getElementById('codeBtnText').textContent = dict.codeBtnText;
+  loginError.textContent = dict.loginError;
+  document.getElementById('eyebrowText').textContent = dict.eyebrow;
+  tabShoppingBtn.textContent = dict.tabShopping;
+  tabItineraryBtn.textContent = dict.tabItinerary;
+  updateConnectionNote();
+  document.getElementById('summaryLbl').textContent = dict.summaryLbl;
+  newStoreInput.placeholder = dict.newStorePh;
+  addStoreBtn.textContent = dict.addStoreBtn;
+  addDayBtn.textContent = dict.addDayBtn;
+  tabPackingBtn.textContent = dict.tabPacking;
+  document.getElementById('packSummaryLbl').textContent = dict.packSummaryLbl;
+  newTopicInput.placeholder = dict.newTopicPh;
+  addTopicBtn.textContent = dict.addTopicBtn;
+  document.getElementById('undoBtnText').textContent = dict.undo;
+  renderTodayBanner();
+
+  ['langBtnHe', 'langBtnHeApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'he'));
+  ['langBtnEn', 'langBtnEnApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'en'));
+}
+
+/* ---------- Access code ----------
+   The app signs in to Firebase silently in the background; the code below is
+   only the door on this device. It is stored as a salted hash so the digits
+   are not sitting in plain sight in the page source. */
+const CODE_SALT = 'lists-london-v1:';
+const CODE_HASH = 'e3433f652a24d977f3caae7b8a738875c9de8acf0ef12c587413ed1c0dfa1ca9';
+const UNLOCK_KEY = 'lists_unlock';
+
+async function hashCode(code) {
+  const bytes = new TextEncoder().encode(CODE_SALT + code);
+  const digest = await crypto.subtle.digest('SHA-256', bytes);
+  return [...new Uint8Array(digest)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function deviceUnlocked() {
+  try { return localStorage.getItem(UNLOCK_KEY) === CODE_HASH; } catch (e) { return false; }
+}
+
+function markUnlocked() {
+  try { localStorage.setItem(UNLOCK_KEY, CODE_HASH); } catch (e) {}
+}
+
+window.lockDevice = function() {
+  try { localStorage.removeItem(UNLOCK_KEY); } catch (e) {}
+  showLockScreen();
+};
+
+function showLockScreen() {
+  appScreen.classList.add('hidden');
+  loginScreen.classList.remove('hidden');
+  codeInput.value = '';
+  loginError.classList.add('hidden');
+}
+
+function showApp() {
+  loginScreen.classList.add('hidden');
+  appScreen.classList.remove('hidden');
+}
+
+async function submitCode() {
+  const code = codeInput.value.trim();
+  if (code.length < 4) return;
+  const ok = (await hashCode(code)) === CODE_HASH;
+  if (!ok) {
+    loginError.classList.remove('hidden');
+    codeInput.value = '';
+    return;
+  }
+  markUnlocked();
+  loginError.classList.add('hidden');
+  showApp();
+  if (!currentUser) showStickyError(t('noSession'));
+}
+
+codeBtn.addEventListener('click', submitCode);
+codeInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitCode(); });
+codeInput.addEventListener('input', () => {
+  codeInput.value = codeInput.value.replace(/\D/g, '');
+  loginError.classList.add('hidden');
+  if (codeInput.value.length === 4) submitCode();
+});
+
+// Escape hatch: signing in with a Google account also opens the app, in case
+// anything ever goes wrong with the code flow mid-trip.
+loginBtn.addEventListener('click', async () => {
+  loginError.classList.add('hidden');
+  try {
+    if (isStandalone) { await signInWithRedirect(auth, provider); return; }
+    await signInWithPopup(auth, provider);
+    markUnlocked();
+    showApp();
+  } catch (err) {
+    console.error(err);
+    if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/cancelled-popup-request') {
+      try { await signInWithRedirect(auth, provider); return; } catch (e2) { console.error(e2); }
+    }
+    showError(t('signInFailed'));
+  }
+});
+
+getRedirectResult(auth).catch(err => console.error(err));
+
+applyStaticTranslations();
+
+// Tell the user plainly when there is no connection, so an edit made on a plane
+// doesn't look like it failed to save.
+function updateConnectionNote() {
+  const note = document.getElementById('syncNote');
+  if (!note) return;
+  const online = navigator.onLine;
+  note.textContent = online ? t('syncNote') : t('offlineNote');
+  note.style.color = online ? '' : 'var(--red)';
+}
+window.addEventListener('online', updateConnectionNote);
+window.addEventListener('offline', updateConnectionNote);
+updateConnectionNote();
+
+// Keeps a copy of the page and the Firebase libraries on the device, so the app
+// opens with no signal. Network-first, so an update is still picked up online.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.error('service worker registration failed', err));
+  });
+}
+
+// If the app is left open past midnight, the banner and the "today's day is the
+// open one" default refresh themselves without a reload.
+let lastSeenDay = todayKey();
+setInterval(() => {
+  const key = todayKey();
+  if (key !== lastSeenDay) {
+    lastSeenDay = key;
+    renderDays();
+  }
+}, 60000);
+
+userChip.addEventListener('click', () => {
+  if (confirm(t('lockConfirm'))) window.lockDevice();
+});
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  if (unsubscribeStores) { unsubscribeStores(); unsubscribeStores = null; }
+  if (unsubscribeDays) { unsubscribeDays(); unsubscribeDays = null; }
+  if (unsubscribePacking) { unsubscribePacking(); unsubscribePacking = null; }
+
+  if (!user) {
+    // No session yet — get one silently. No screen, no password, nothing to do.
+    stores = []; days = []; packing = [];
+    signInAnonymously(auth).catch(err => {
+      console.error(err);
+      showStickyError(!navigator.onLine ? t('offlineFirstRun')
+        : err.code === 'auth/operation-not-allowed' ? t('anonDisabled')
+        : t('signInFailed'));
+    });
+    return;
+  }
+
+  userChip.innerHTML = `<span>${escapeHtml(t('lock'))}</span>`;
+  listenToStores();
+  listenToDays();
+  listenToPacking();
+
+  // The code is what decides whether the lists are shown on this device.
+  if (deviceUnlocked()) showApp(); else showLockScreen();
+});
+
+// Shared list: everyone who signs in reads/writes the same collection
+const SHARED_PATH = ['trips', 'london', 'stores'];
+const DAYS_PATH = ['trips', 'london', 'days'];
+const PACKING_PATH = ['trips', 'london', 'packing'];
+
+function listenToStores() {
+  const storesRef = collection(db, ...SHARED_PATH);
+  const q = query(storesRef, orderBy('createdAt', 'asc'));
+  unsubscribeStores = onSnapshot(q, (snapshot) => {
+    stores = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Stable sort: stores without an explicit 'order' keep their createdAt order
+    stores.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    render();
+  }, (err) => {
+    console.error(err);
+    showError(t('loadFailed'));
+  });
+}
+
+function listenToDays() {
+  const daysRef = collection(db, ...DAYS_PATH);
+  const q = query(daysRef, orderBy('createdAt', 'asc'));
+  unsubscribeDays = onSnapshot(q, (snapshot) => {
+    days = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    days.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    renderDays();
+  }, (err) => {
+    console.error(err);
+    showError(t('loadFailed'));
+  });
+}
+
+function listenToPacking() {
+  const packingRef = collection(db, ...PACKING_PATH);
+  const q = query(packingRef, orderBy('createdAt', 'asc'));
+  unsubscribePacking = onSnapshot(q, (snapshot) => {
+    packing = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    packing.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+    renderPacking();
+  }, (err) => {
+    console.error(err);
+    showError(t('loadFailedPacking'));
+  });
+}
+
+addDayBtn.addEventListener('click', addDay);
+
+async function addDay() {
+  if (!requireSession()) return;
+  const daysRef = collection(db, ...DAYS_PATH);
+  let label = t('dayLabel')(days.length + 1);
+  // If the previous day's label carries a date, continue the sequence with the
+  // next calendar date, keeping the same "יום N - DD/MM/YY" shape.
+  const last = days[days.length - 1];
+  const lastDate = last ? parseLabelDate(last.label) : null;
+  if (lastDate) {
+    lastDate.setDate(lastDate.getDate() + 1);
+    const dd = String(lastDate.getDate()).padStart(2, '0');
+    const mm = String(lastDate.getMonth() + 1).padStart(2, '0');
+    const yy = String(lastDate.getFullYear()).slice(2);
+    label += ` - ${dd}/${mm}/${yy}`;
+  }
+  await attempt(() => addDoc(daysRef, { label, activities: [], order: days.length, createdAt: serverTimestamp() }));
+}
+
+window.deleteDay = async function(dayId) {
+  if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  if (!confirm(t('confirmDeleteDay')(day && day.label ? day.label : t('dayLabel')('')))) return;
+  const snapshot = day ? (({ id, ...rest }) => rest)(day) : null;
+  await deleteDoc(doc(db, ...DAYS_PATH, dayId));
+  if (snapshot) {
+    offerUndo(day.label || '', () => setDoc(doc(db, ...DAYS_PATH, dayId), snapshot));
+  }
+};
+
+window.reorderDays = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...DAYS_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
+};
+
+window.updateDayLabel = async function(dayId, value) {
+  if (!currentUser) return;
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { label: value }, { merge: true });
+};
+
+window.addActivity = async function(dayId) {
+  if (!requireSession()) return;
+  const day = days.find(d => d.id === dayId);
+  const newActs = [...(day.activities || []), { id: cryptoRandomId(), time: '', title: '', image: '' }];
+  await attempt(() => setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true }));
+};
+
+window.deleteActivity = async function(dayId, actId) {
+  if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  if (!day) return;
+  const act = (day.activities || []).find(a => a.id === actId);
+  const name = act && act.title ? act.title : t('thisActivity');
+  if (!confirm(t('confirmDeleteActivity')(name))) return;
+  const index = (day.activities || []).findIndex(a => a.id === actId);
+  const newActs = (day.activities || []).filter(a => a.id !== actId);
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+  if (act) {
+    offerUndo(name, () => {
+      const cur = days.find(d => d.id === dayId);
+      if (!cur) return;
+      return setDoc(doc(db, ...DAYS_PATH, dayId),
+        { activities: restoreIntoArray(cur.activities, act, index) }, { merge: true });
+    });
+  }
+};
+
+window.updateActivityField = async function(dayId, actId, field, value) {
+  if (!currentUser) return;
+  const day = days.find(d => d.id === dayId);
+  const newActs = (day.activities || []).map(a => a.id === actId ? { ...a, [field]: value } : a);
+  await setDoc(doc(db, ...DAYS_PATH, dayId), { activities: newActs }, { merge: true });
+};
+
+// Compress an image file into a small base64 data URL so it fits comfortably in Firestore
+function compressImageFile(file, maxDim = 640, quality = 0.6) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = (e) => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > h && w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+      else if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      resolve(canvas.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+window.handleActivityImageInput = async function(dayId, actId, inputEl) {
+  const file = inputEl.files && inputEl.files[0];
+  if (!file) return;
+  try {
+    const dataUrl = await compressImageFile(file);
+    await window.updateActivityField(dayId, actId, 'image', dataUrl);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+window.handleActivityDrop = async function(ev, dayId, actId) {
+  ev.preventDefault();
+  ev.currentTarget.classList.remove('drag-over');
+  const file = ev.dataTransfer.files && ev.dataTransfer.files[0];
+  if (!file || !file.type.startsWith('image/')) return;
+  try {
+    const dataUrl = await compressImageFile(file);
+    await window.updateActivityField(dayId, actId, 'image', dataUrl);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+function renderDays() {
+  if (isDragging) return;
+  renderTodayBanner();
+  applyTodayDefault();
+  if (days.length === 0) {
+    daysContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyDays')}</div><div>${t('emptyDaysSub')}</div></div>`;
+    return;
+  }
+  daysContainer.innerHTML = days.map(day => {
+    const activities = day.activities || [];
+    const rowsHtml = activities.length === 0
+      ? `<div class="empty-store">${t('emptyActivities')}</div>`
+      : '<ul class="activities">' + activities.map(act => `
+          <li class="activity-row">
+            <input type="text" class="activity-time" placeholder="${t('timePh')}" value="${escapeHtml(act.time || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'time', this.value)">
+            <input type="text" class="activity-title" placeholder="${t('activityPh')}" value="${escapeHtml(act.title || '')}" onchange="updateActivityField('${day.id}', '${act.id}', 'title', this.value)">
+            <label class="activity-imgzone"
+                   ondragover="event.preventDefault(); this.classList.add('drag-over')"
+                   ondragleave="this.classList.remove('drag-over')"
+                   ondrop="handleActivityDrop(event, '${day.id}', '${act.id}')">
+              ${act.image ? `<img src="${act.image}">` : '<span class="plus">+</span>'}
+              <input type="file" accept="image/*" onchange="handleActivityImageInput('${day.id}', '${act.id}', this)">
+            </label>
+            <button class="activity-del" onclick="deleteActivity('${day.id}', '${act.id}')">✕</button>
+          </li>
+        `).join('') + '</ul>';
+
+    const isCollapsed = !expandedDays.has(day.id);
+    return `
+      <div class="day-card" data-id="${day.id}">
+        <div class="day-head">
+          <span class="drag-handle day-drag-handle">⠿</span>
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleDayCollapse('${day.id}')">${chevronSvg()}</button>
+          <input type="text" class="day-label-input" value="${escapeHtml(day.label || '')}" onchange="updateDayLabel('${day.id}', this.value)">
+          <button class="day-del" onclick="deleteDay('${day.id}')">✕</button>
+        </div>
+        ${isCollapsed ? '' : `
+          ${rowsHtml}
+          <div class="add-activity-row">
+            <button onclick="addActivity('${day.id}')">${t('addActivityBtn')}</button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+addStoreBtn.addEventListener('click', addStore);
+newStoreInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addStore(); });
+
+enableDragReorder(storesContainer, 'store', 'store-drag-handle', (newOrder) => {
+  window.reorderStores(newOrder);
+});
+enableDragReorder(storesContainer, 'item', 'item-drag-handle', (newOrder, container) => {
+  const storeEl = container.closest('.store');
+  if (storeEl) window.reorderItems(storeEl.dataset.id, newOrder);
+});
+enableDragReorder(daysContainer, 'day-card', 'day-drag-handle', (newOrder) => {
+  window.reorderDays(newOrder);
+});
+enableDragReorder(packingContainer, 'store', 'topic-drag-handle', (newOrder) => {
+  window.reorderTopics(newOrder);
+});
+enableDragReorder(packingContainer, 'item', 'pack-item-drag-handle', (newOrder, container) => {
+  const topicEl = container.closest('.store');
+  if (topicEl) window.reorderPackItems(topicEl.dataset.id, newOrder);
+});
+
+addTopicBtn.addEventListener('click', addTopic);
+newTopicInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') addTopic(); });
+
+async function addStore() {
+  const name = newStoreInput.value.trim();
+  if (!name) return;
+  if (!requireSession()) return;
+  newStoreInput.value = '';
+  const storesRef = collection(db, ...SHARED_PATH);
+  await attempt(() => addDoc(storesRef, { name, items: [], createdAt: serverTimestamp(), addedBy: currentUser.displayName || '', order: stores.length, clickCollect: false }));
+}
+
+window.toggleClickCollect = async function(storeId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { clickCollect: !store.clickCollect }, { merge: true });
+};
+
+window.reorderStores = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...SHARED_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
+};
+
+window.deleteStore = async function(storeId) {
+  if (!currentUser) return;
+  // No confirmation here — the undo bar is the safety net on this tab.
+  const store = stores.find(s => s.id === storeId);
+  const snapshot = store ? (({ id, ...rest }) => rest)(store) : null;
+  await deleteDoc(doc(db, ...SHARED_PATH, storeId));
+  if (snapshot) {
+    offerUndo(store.name, () => setDoc(doc(db, ...SHARED_PATH, storeId), snapshot));
+  }
+};
+
+window.updateStoreName = async function(storeId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { name }, { merge: true });
+};
+
+window.addItem = async function(storeId, inputEl) {
+  const name = inputEl.value.trim();
+  if (!name) return;
+  if (!requireSession()) return;
+  inputEl.value = '';
+  const store = stores.find(s => s.id === storeId);
+  const newItems = [...(store.items || []), { id: cryptoRandomId(), name, checked: false, qty: 1, price: 0 }];
+  await attempt(() => setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true }));
+};
+
+window.toggleItem = async function(storeId, itemId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.updateQty = async function(storeId, itemId, value) {
+  if (!currentUser) return;
+  let qty = parseInt(value, 10);
+  if (!Number.isFinite(qty) || qty < 1) qty = 1;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, qty } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.updatePrice = async function(storeId, itemId, value) {
+  if (!currentUser) return;
+  let price = parseFloat(value);
+  if (!Number.isFinite(price) || price < 0) price = 0;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, price } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.updateItemName = async function(storeId, itemId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  const store = stores.find(s => s.id === storeId);
+  const newItems = (store.items || []).map(i => i.id === itemId ? { ...i, name } : i);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.reorderItems = async function(storeId, newPendingIdOrder) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  const items = store.items || [];
+  const purchased = items.filter(i => i.checked);
+  const byId = Object.fromEntries(items.map(i => [i.id, i]));
+  const reorderedPending = newPendingIdOrder.map(id => byId[id]).filter(Boolean);
+  const newItems = [...reorderedPending, ...purchased];
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+};
+
+window.deleteItem = async function(storeId, itemId) {
+  if (!currentUser) return;
+  const store = stores.find(s => s.id === storeId);
+  if (!store) return;
+  const item = (store.items || []).find(i => i.id === itemId);
+  const index = (store.items || []).findIndex(i => i.id === itemId);
+  const newItems = (store.items || []).filter(i => i.id !== itemId);
+  await setDoc(doc(db, ...SHARED_PATH, storeId), { items: newItems }, { merge: true });
+  if (item) {
+    offerUndo(item.name, () => {
+      const cur = stores.find(s => s.id === storeId);
+      if (!cur) return;
+      return setDoc(doc(db, ...SHARED_PATH, storeId),
+        { items: restoreIntoArray(cur.items, item, index) }, { merge: true });
+    });
+  }
+};
+
+/* ---------- Packing list ---------- */
+
+async function addTopic() {
+  const name = newTopicInput.value.trim();
+  if (!name) return;
+  if (!requireSession()) return;
+  newTopicInput.value = '';
+  const packingRef = collection(db, ...PACKING_PATH);
+  await attempt(() => addDoc(packingRef, { name, items: [], order: packing.length, createdAt: serverTimestamp(), addedBy: currentUser.displayName || '' }));
+}
+
+window.deleteTopic = async function(topicId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  const snapshot = topic ? (({ id, ...rest }) => rest)(topic) : null;
+  await deleteDoc(doc(db, ...PACKING_PATH, topicId));
+  if (snapshot) {
+    offerUndo(topic.name, () => setDoc(doc(db, ...PACKING_PATH, topicId), snapshot));
+  }
+};
+
+window.updateTopicName = async function(topicId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { name }, { merge: true });
+};
+
+window.addPackItem = async function(topicId, inputEl) {
+  const name = inputEl.value.trim();
+  if (!name) return;
+  if (!requireSession()) return;
+  inputEl.value = '';
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = [...(topic.items || []), { id: cryptoRandomId(), name, checked: false }];
+  await attempt(() => setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true }));
+};
+
+window.togglePackItem = async function(topicId, itemId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = (topic.items || []).map(i => i.id === itemId ? { ...i, checked: !i.checked } : i);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.updatePackItemName = async function(topicId, itemId, value) {
+  if (!currentUser) return;
+  const name = value.trim();
+  if (!name) return;
+  const topic = packing.find(p => p.id === topicId);
+  const newItems = (topic.items || []).map(i => i.id === itemId ? { ...i, name } : i);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+window.deletePackItem = async function(topicId, itemId) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  if (!topic) return;
+  const item = (topic.items || []).find(i => i.id === itemId);
+  const index = (topic.items || []).findIndex(i => i.id === itemId);
+  const newItems = (topic.items || []).filter(i => i.id !== itemId);
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+  if (item) {
+    offerUndo(item.name, () => {
+      const cur = packing.find(p => p.id === topicId);
+      if (!cur) return;
+      return setDoc(doc(db, ...PACKING_PATH, topicId),
+        { items: restoreIntoArray(cur.items, item, index) }, { merge: true });
+    });
+  }
+};
+
+window.reorderTopics = async function(newIdOrder) {
+  if (!currentUser) return;
+  const batch = writeBatch(db);
+  newIdOrder.forEach((id, index) => {
+    batch.set(doc(db, ...PACKING_PATH, id), { order: index }, { merge: true });
+  });
+  await batch.commit();
+};
+
+window.reorderPackItems = async function(topicId, newPendingIdOrder) {
+  if (!currentUser) return;
+  const topic = packing.find(p => p.id === topicId);
+  const items = topic.items || [];
+  const packed = items.filter(i => i.checked);
+  const byId = Object.fromEntries(items.map(i => [i.id, i]));
+  const reorderedPending = newPendingIdOrder.map(id => byId[id]).filter(Boolean);
+  const newItems = [...reorderedPending, ...packed];
+  await setDoc(doc(db, ...PACKING_PATH, topicId), { items: newItems }, { merge: true });
+};
+
+function renderPacking() {
+  if (isDragging) return;
+
+  let totalItems = 0, packedItems = 0;
+  packing.forEach(p => {
+    const items = p.items || [];
+    totalItems += items.length;
+    packedItems += items.filter(i => i.checked).length;
+  });
+
+  document.getElementById('packSummaryNum').textContent = packedItems + ' / ' + totalItems;
+  const pct = totalItems ? Math.round((packedItems / totalItems) * 100) : 0;
+  document.getElementById('packSummaryBar').style.width = pct + '%';
+  document.getElementById('packSummaryPct').textContent = pct + '%';
+
+  if (packing.length === 0) {
+    packingContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyTopics')}</div><div>${t('emptyTopicsSub')}</div></div>`;
+    return;
+  }
+
+  packingContainer.innerHTML = packing.map(topic => {
+    const items = topic.items || [];
+    const checkedCount = items.filter(i => i.checked).length;
+    const pending = items.filter(i => !i.checked);
+    const packed = items.filter(i => i.checked);
+
+    const renderRow = (item, draggable) => {
+      const handleHtml = draggable
+        ? '<span class="drag-handle pack-item-drag-handle">⠿</span>'
+        : '<span class="drag-handle" style="visibility:hidden">⠿</span>';
+      return `
+      <li class="item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
+        <div class="item-top">
+          ${handleHtml}
+          <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="togglePackItem('${topic.id}', '${item.id}')">${checkmarkSvg()}</div>
+          <input type="text" class="item-name" value="${escapeHtml(item.name)}" onchange="updatePackItemName('${topic.id}', '${item.id}', this.value)">
+          <button class="item-del" onclick="deletePackItem('${topic.id}', '${item.id}')">✕</button>
+        </div>
+      </li>`;
+    };
+
+    const pendingHtml = pending.length === 0
+      ? (items.length === 0
+          ? `<div class="empty-store">${t('emptyTopic')}</div>`
+          : `<div class="empty-store">${t('allPacked')}</div>`)
+      : '<ul class="items">' + pending.map(i => renderRow(i, true)).join('') + '</ul>';
+
+    const packedHtml = packed.length === 0 ? '' : `
+      <div class="purchased-divider">${t('packed')} (${packed.length})</div>
+      <ul class="items purchased-list">${packed.map(i => renderRow(i, false)).join('')}</ul>
+    `;
+
+    const isCollapsed = !expandedTopics.has(topic.id);
+    return `
+      <div class="store" data-id="${topic.id}">
+        <div class="store-head">
+          <span class="drag-handle topic-drag-handle">⠿</span>
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleTopicCollapse('${topic.id}')">${chevronSvg()}</button>
+          <div class="store-title-row">
+            <div class="store-mark"></div>
+            <input type="text" class="store-name" value="${escapeHtml(topic.name)}" onchange="updateTopicName('${topic.id}', this.value)">
+            <div class="store-count">${checkedCount}/${items.length}</div>
+          </div>
+          <button class="store-del" onclick="deleteTopic('${topic.id}')">✕</button>
+        </div>
+        ${isCollapsed ? '' : `
+          ${pendingHtml}
+          ${packedHtml}
+          <div class="add-item">
+            <input type="text" placeholder="${t('addItemPh')}" onkeydown="if(event.key==='Enter') addPackItem('${topic.id}', this)">
+            <button onclick="addPackItem('${topic.id}', this.previousElementSibling)">${t('addItemBtn')}</button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+function cryptoRandomId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function checkmarkSvg() {
+  return '<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 12.5L10 17.5L19 7.5" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+}
+
+function render() {
+  if (isDragging) return;
+  let totalItems = 0, checkedItems = 0;
+  stores.forEach(s => {
+    const items = s.items || [];
+    totalItems += items.length;
+    checkedItems += items.filter(i => i.checked).length;
+  });
+
+  document.getElementById('summaryNum').textContent = checkedItems + ' / ' + totalItems;
+  const pct = totalItems ? Math.round((checkedItems / totalItems) * 100) : 0;
+  document.getElementById('summaryBar').style.width = pct + '%';
+  document.getElementById('summaryPct').textContent = pct + '%';
+
+  if (stores.length === 0) {
+    storesContainer.innerHTML = `<div class="empty-state"><div class="big">${t('emptyStores')}</div><div>${t('emptyStoresSub')}</div></div>`;
+    return;
+  }
+
+  storesContainer.innerHTML = stores.map(store => {
+    const items = store.items || [];
+    const checkedCount = items.filter(i => i.checked).length;
+    const pending = items.filter(i => !i.checked);
+    const purchased = items.filter(i => i.checked);
+
+    const renderRow = (item, draggable) => {
+      const qty = item.qty != null ? item.qty : 1;
+      const price = item.price || 0;
+      const rowTotal = qty * price;
+      const rowTotalHtml = rowTotal > 0 ? `<span class="row-total">£${rowTotal.toFixed(2)}</span>` : '';
+      const handleHtml = draggable ? '<span class="drag-handle item-drag-handle">⠿</span>' : '<span class="drag-handle" style="visibility:hidden">⠿</span>';
+      return `
+      <li class="item ${item.checked ? 'checked' : ''}" data-id="${item.id}">
+        <div class="item-top">
+          ${handleHtml}
+          <div class="checkbox ${item.checked ? 'checked' : ''}" onclick="toggleItem('${store.id}', '${item.id}')">${checkmarkSvg()}</div>
+          <input type="text" class="item-name" value="${escapeHtml(item.name)}" onchange="updateItemName('${store.id}', '${item.id}', this.value)">
+          <input type="number" min="1" class="qty-input" value="${qty}" onchange="updateQty('${store.id}', '${item.id}', this.value)">
+          <input type="number" min="0" step="0.01" class="price-input" placeholder="£" value="${item.price ? item.price : ''}" onchange="updatePrice('${store.id}', '${item.id}', this.value)">
+          ${rowTotalHtml}
+          <button class="item-del" onclick="deleteItem('${store.id}', '${item.id}')">✕</button>
+        </div>
+      </li>`;
+    };
+
+    const storeTotalGbp = items.reduce((sum, i) => sum + (i.qty != null ? i.qty : 1) * (i.price || 0), 0);
+    const storeTotalIls = storeTotalGbp * 4;
+    const totalHtml = storeTotalGbp === 0 ? '' : `
+      <div class="store-total">
+        <span class="label">${t('total')}</span>
+        <span class="amounts"><span class="gbp">£${storeTotalGbp.toFixed(2)}</span><span class="ils">₪${storeTotalIls.toFixed(2)}</span></span>
+      </div>
+    `;
+
+    const pendingHtml = pending.length === 0
+      ? (items.length === 0
+          ? `<div class="empty-store">${t('emptyStore')}</div>`
+          : `<div class="empty-store">${t('allBought')}</div>`)
+      : '<ul class="items">' + pending.map(i => renderRow(i, true)).join('') + '</ul>';
+
+    const purchasedHtml = purchased.length === 0 ? '' : `
+      <div class="purchased-divider">${t('purchased')} (${purchased.length})</div>
+      <ul class="items purchased-list">${purchased.map(i => renderRow(i, false)).join('')}</ul>
+    `;
+
+    const isCollapsed = !expandedStores.has(store.id);
+    return `
+      <div class="store" data-id="${store.id}">
+        <div class="store-head">
+          <span class="drag-handle store-drag-handle">⠿</span>
+          <button class="collapse-btn ${isCollapsed ? 'collapsed' : ''}" onclick="toggleStoreCollapse('${store.id}')">${chevronSvg()}</button>
+          <div class="store-title-row">
+            <div class="store-mark"></div>
+            <input type="text" class="store-name" value="${escapeHtml(store.name)}" onchange="updateStoreName('${store.id}', this.value)">
+            <div class="cc-badge ${store.clickCollect ? 'active' : ''}" onclick="toggleClickCollect('${store.id}')">C&amp;C</div>
+            <div class="store-count">${checkedCount}/${items.length}</div>
+          </div>
+          <button class="store-del" onclick="deleteStore('${store.id}')">✕</button>
+        </div>
+        ${isCollapsed ? '' : `
+          ${pendingHtml}
+          ${purchasedHtml}
+          ${totalHtml}
+          <div class="add-item">
+            <input type="text" placeholder="${t('addItemPh')}" onkeydown="if(event.key==='Enter') addItem('${store.id}', this)">
+            <button onclick="addItem('${store.id}', this.previousElementSibling)">${t('addItemBtn')}</button>
+          </div>
+        `}
+      </div>
+    `;
+  }).join('');
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str == null ? '' : str;
+  return div.innerHTML;
+}
+</script>
+</body>
+</html>
