@@ -1293,6 +1293,7 @@ const I18N = {
     signOut: 'יציאה',
     signInFailed: 'ההתחברות נכשלה. נסי שוב.',
     anonDisabled: 'צריך להפעיל ב-Firebase את ההתחברות האנונימית (Authentication ← Sign-in method ← Anonymous).',
+    domainNotAllowed: 'הכתובת הזו לא מאושרת ב-Firebase (Authentication ← Settings ← Authorized domains).',
     offlineNote: 'אין חיבור — השינויים נשמרים במכשיר ויסתנכרנו לבד',
     offlineFirstRun: 'אין חיבור, וזו הפעם הראשונה במכשיר הזה. צריך לפתוח פעם אחת עם אינטרנט.',
     noSession: 'אין חיבור למסד הנתונים, ולכן שום דבר לא נשמר. צריך להפעיל Anonymous ב-Firebase (Authentication ← Sign-in method).',
@@ -1349,6 +1350,7 @@ const I18N = {
     signOut: 'Sign out',
     signInFailed: 'Sign-in failed. Please try again.',
     anonDisabled: 'Anonymous sign-in must be enabled in Firebase (Authentication > Sign-in method > Anonymous).',
+    domainNotAllowed: 'This address is not authorised in Firebase (Authentication > Settings > Authorized domains).',
     offlineNote: 'Offline — changes are saved on this device and will sync by themselves',
     offlineFirstRun: 'No connection, and this is the first run on this device. Open it once with internet.',
     noSession: 'Not connected to the database, so nothing is being saved. Enable Anonymous in Firebase (Authentication > Sign-in method).',
@@ -1452,6 +1454,24 @@ function showError(text) {
   undoTimer = setTimeout(hideUndo, 9000);
 }
 
+// Firebase reports "anonymous sign-in is off" under more than one code, and any
+// code we don't recognise is shown verbatim — guessing from a generic message
+// wastes far more time than an ugly error string ever will.
+const ANON_OFF_CODES = [
+  'auth/operation-not-allowed',
+  'auth/admin-restricted-operation',
+  'auth/configuration-not-found'
+];
+
+function describeAuthError(err) {
+  if (!navigator.onLine) return t('offlineFirstRun');
+  const code = (err && err.code) || '';
+  if (ANON_OFF_CODES.includes(code)) return t('anonDisabled');
+  if (code === 'auth/unauthorized-domain') return t('domainNotAllowed');
+  if (code === 'auth/network-request-failed') return t('loadFailed');
+  return t('signInFailed') + (code ? ' (' + code + ')' : '');
+}
+
 // Some problems must not fade away after a few seconds — with no database
 // session the whole app is inert, and the user needs to keep seeing why.
 function showStickyError(text) {
@@ -1553,7 +1573,7 @@ loginBtn.addEventListener('click', async () => {
     if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment' || err.code === 'auth/cancelled-popup-request') {
       try { await signInWithRedirect(auth, provider); return; } catch (e2) { console.error(e2); }
     }
-    showError(t('signInFailed'));
+    showStickyError(describeAuthError(err));
   }
 });
 
@@ -1614,9 +1634,7 @@ onAuthStateChanged(auth, (user) => {
     signInAnonymously(auth).catch(err => {
       console.error(err);
       showFallbackScreen();
-      showStickyError(!navigator.onLine ? t('offlineFirstRun')
-        : err.code === 'auth/operation-not-allowed' ? t('anonDisabled')
-        : t('signInFailed'));
+      showStickyError(describeAuthError(err));
     });
     return;
   }
