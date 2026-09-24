@@ -1079,9 +1079,18 @@ window.toggleStoreCollapse = function(storeId) {
   render();
 };
 
+// Days the user closed by hand. Without this the auto-open below would keep
+// re-opening today's card every time the list re-renders.
+const userCollapsedDays = new Set();
+
 window.toggleDayCollapse = function(dayId) {
-  if (expandedDays.has(dayId)) expandedDays.delete(dayId);
-  else expandedDays.add(dayId);
+  if (expandedDays.has(dayId)) {
+    expandedDays.delete(dayId);
+    userCollapsedDays.add(dayId);
+  } else {
+    expandedDays.add(dayId);
+    userCollapsedDays.delete(dayId);
+  }
   renderDays();
 };
 
@@ -1160,16 +1169,19 @@ function labelIsToday(label) {
 let expandedDaysInitializedFor = null;
 
 function applyTodayDefault() {
-  // Nothing loaded yet — don't burn the once-per-day initialisation on an empty
-  // list, or the real days would arrive with nothing opened.
-  if (days.length === 0) return;
   const key = todayKey();
-  if (expandedDaysInitializedFor === key) return;
-  expandedDaysInitializedFor = key;
-  expandedDays.clear();
-  // Every day carrying today's date opens — there can legitimately be more than
-  // one (a flight day and a plan for the same date, say).
-  days.filter(d => labelIsToday(d.label)).forEach(d => expandedDays.add(d.id));
+  if (expandedDaysInitializedFor !== key) {
+    // A new calendar day: start the defaults over.
+    expandedDaysInitializedFor = key;
+    expandedDays.clear();
+    userCollapsedDays.clear();
+  }
+  // Re-evaluated on every render rather than once at load, so a day that is
+  // added or renamed to today's date afterwards opens too. Anything the user
+  // closed by hand stays closed.
+  days.forEach(d => {
+    if (labelIsToday(d.label) && !userCollapsedDays.has(d.id)) expandedDays.add(d.id);
+  });
 }
 
 function chevronSvg() {
