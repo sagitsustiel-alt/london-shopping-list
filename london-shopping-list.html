@@ -1291,6 +1291,7 @@ const I18N = {
     loginBtnText: 'התחברות עם Google',
     loginError: 'ההתחברות נכשלה. נסי שוב.',
     signOut: 'יציאה',
+    signInGoogle: 'Google כניסה עם',
     signInFailed: 'ההתחברות נכשלה. נסי שוב.',
     anonDisabled: 'צריך להפעיל ב-Firebase את ההתחברות האנונימית (Authentication ← Sign-in method ← Anonymous).',
     domainNotAllowed: 'הכתובת הזו לא מאושרת ב-Firebase (Authentication ← Settings ← Authorized domains).',
@@ -1348,6 +1349,7 @@ const I18N = {
     loginBtnText: 'Sign in with Google',
     loginError: 'Sign-in failed. Please try again.',
     signOut: 'Sign out',
+    signInGoogle: 'Sign in with Google',
     signInFailed: 'Sign-in failed. Please try again.',
     anonDisabled: 'Anonymous sign-in must be enabled in Firebase (Authentication > Sign-in method > Anonymous).',
     domainNotAllowed: 'This address is not authorised in Firebase (Authentication > Settings > Authorized domains).',
@@ -1562,11 +1564,12 @@ function showApp() {
   appScreen.classList.remove('hidden');
 }
 
-loginBtn.addEventListener('click', async () => {
+async function signInWithGoogle() {
   loginError.classList.add('hidden');
   try {
     if (isStandalone) { await signInWithRedirect(auth, provider); return; }
     await signInWithPopup(auth, provider);
+    hideUndo();
     showApp();
   } catch (err) {
     console.error(err);
@@ -1575,7 +1578,9 @@ loginBtn.addEventListener('click', async () => {
     }
     showStickyError(describeAuthError(err));
   }
-});
+}
+
+loginBtn.addEventListener('click', signInWithGoogle);
 
 getRedirectResult(auth).catch(err => console.error(err));
 
@@ -1614,12 +1619,16 @@ setInterval(() => {
   }
 }, 60000);
 
-// Only meaningful when someone signed in with a real Google account through the
-// fallback; with the silent anonymous session there is nothing to sign out of.
+// Always available: while running on the silent anonymous session this offers a
+// Google sign-in (the way back to data that only your own account may read),
+// and once signed in with a real account it offers to sign out again.
 userChip.addEventListener('click', async () => {
-  if (currentUser && !currentUser.isAnonymous && confirm(t('logoutConfirm'))) {
-    await signOut(auth);
+  if (!currentUser) return;
+  if (currentUser.isAnonymous) {
+    await signInWithGoogle();
+    return;
   }
+  if (confirm(t('logoutConfirm'))) await signOut(auth);
 });
 
 onAuthStateChanged(auth, (user) => {
@@ -1639,13 +1648,10 @@ onAuthStateChanged(auth, (user) => {
     return;
   }
 
-  // The chip only has a job for a named account; hide it for the silent session.
-  if (currentUser.isAnonymous) {
-    userChip.classList.add('hidden');
-  } else {
-    userChip.classList.remove('hidden');
-    userChip.innerHTML = `<img src="${currentUser.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(currentUser.displayName ? currentUser.displayName.split(' ')[0] : t('signOut'))}`;
-  }
+  userChip.classList.remove('hidden');
+  userChip.innerHTML = currentUser.isAnonymous
+    ? `<span>${escapeHtml(t('signInGoogle'))}</span>`
+    : `<img src="${currentUser.photoURL || ''}" onerror="this.style.display='none'"> ${escapeHtml(currentUser.displayName ? currentUser.displayName.split(' ')[0] : t('signOut'))}`;
 
   listenToStores();
   listenToDays();
