@@ -716,6 +716,32 @@
     text-align:center;
   }
 
+  /* Price fields hidden: the item name gets the freed space */
+  #shoppingView.hide-prices .price-input,
+  #shoppingView.hide-prices .row-total,
+  #shoppingView.hide-prices .store-total{display:none;}
+
+  .price-toggle-row{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+  }
+  .price-toggle-btn{
+    font-family:'Heebo',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    color:var(--navy);
+    background:#fff;
+    border:1.5px solid var(--navy);
+    border-radius:20px;
+    padding:6px 16px;
+    cursor:pointer;
+  }
+  .price-toggle-btn.on{
+    color:#fff;
+    background:var(--navy);
+  }
+
   .store-total{
     display:flex;
     justify-content:space-between;
@@ -976,6 +1002,9 @@
     <div class="sync-note" id="syncNote">שומר אוטומטית לחשבון שלך</div>
 
     <div id="shoppingView">
+      <div class="price-toggle-row">
+        <button class="price-toggle-btn" id="priceToggleBtn" onclick="togglePrices()">£ הצג מחירים</button>
+      </div>
       <div class="summary">
         <div>
           <div class="num" id="summaryNum">0 / 0</div>
@@ -1337,6 +1366,8 @@ const I18N = {
     allBought: 'כל הפריטים נקנו 🎉',
     purchased: 'נקנו',
     total: 'סה"כ',
+    showPrices: '£ הצג מחירים',
+    hidePrices: '£ הסתר מחירים',
     addItemPh: 'פריט חדש...',
     addItemBtn: 'הוסף',
     emptyDays: 'עוד אין ימים בתוכנית',
@@ -1396,6 +1427,8 @@ const I18N = {
     allBought: 'All items bought 🎉',
     purchased: 'Bought',
     total: 'Total',
+    showPrices: '£ Show prices',
+    hidePrices: '£ Hide prices',
     addItemPh: 'New item...',
     addItemBtn: 'Add',
     emptyDays: 'No days in the plan yet',
@@ -1548,6 +1581,25 @@ function restoreIntoArray(currentItems, item, index) {
   return arr;
 }
 
+/* ---------- Price fields on/off ----------
+   Hidden by default so item names get the room. The choice is remembered
+   on this device only. */
+let showPrices = false;
+try { showPrices = localStorage.getItem('showPrices') === '1'; } catch (e) {}
+
+function applyPriceVisibility() {
+  document.getElementById('shoppingView').classList.toggle('hide-prices', !showPrices);
+  const btn = document.getElementById('priceToggleBtn');
+  btn.textContent = showPrices ? t('hidePrices') : t('showPrices');
+  btn.classList.toggle('on', showPrices);
+}
+
+window.togglePrices = function() {
+  showPrices = !showPrices;
+  try { localStorage.setItem('showPrices', showPrices ? '1' : '0'); } catch (e) {}
+  applyPriceVisibility();
+};
+
 function applyStaticTranslations() {
   const dict = I18N[currentLang];
   document.documentElement.lang = currentLang;
@@ -1570,6 +1622,7 @@ function applyStaticTranslations() {
   newTopicInput.placeholder = dict.newTopicPh;
   addTopicBtn.textContent = dict.addTopicBtn;
   document.getElementById('undoBtnText').textContent = dict.undo;
+  applyPriceVisibility();
   renderTodayBanner();
 
   ['langBtnHe', 'langBtnHeApp'].forEach(id => document.getElementById(id).classList.toggle('active', currentLang === 'he'));
