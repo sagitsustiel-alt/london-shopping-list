@@ -717,6 +717,7 @@
   }
 
   /* Price fields hidden: the item name gets the freed space */
+  #shoppingView.hide-prices .qty-input,
   #shoppingView.hide-prices .price-input,
   #shoppingView.hide-prices .row-total,
   #shoppingView.hide-prices .store-total{display:none;}
@@ -1003,7 +1004,7 @@
 
     <div id="shoppingView">
       <div class="price-toggle-row">
-        <button class="price-toggle-btn" id="priceToggleBtn" onclick="togglePrices()">£ הצג מחירים</button>
+        <button class="price-toggle-btn" id="priceToggleBtn" onclick="togglePrices()">£ הצג כמות ומחיר</button>
       </div>
       <div class="summary">
         <div>
@@ -1366,8 +1367,8 @@ const I18N = {
     allBought: 'כל הפריטים נקנו 🎉',
     purchased: 'נקנו',
     total: 'סה"כ',
-    showPrices: '£ הצג מחירים',
-    hidePrices: '£ הסתר מחירים',
+    showPrices: '£ הצג כמות ומחיר',
+    hidePrices: '£ הסתר כמות ומחיר',
     addItemPh: 'פריט חדש...',
     addItemBtn: 'הוסף',
     emptyDays: 'עוד אין ימים בתוכנית',
@@ -1427,8 +1428,8 @@ const I18N = {
     allBought: 'All items bought 🎉',
     purchased: 'Bought',
     total: 'Total',
-    showPrices: '£ Show prices',
-    hidePrices: '£ Hide prices',
+    showPrices: '£ Show qty & price',
+    hidePrices: '£ Hide qty & price',
     addItemPh: 'New item...',
     addItemBtn: 'Add',
     emptyDays: 'No days in the plan yet',
